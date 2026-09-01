@@ -1,0 +1,66 @@
+{
+  "version": "2.0",
+  "timezone": "Asia/Seoul",
+  "collections": {
+    "plans": {
+      "doc_id": "plan_id",
+      "fields": {
+        "id": "string",
+        "title": "string",
+        "start_date": "string (YYYY-MM-DD)",
+        "end_date": "string (YYYY-MM-DD)",
+        "priority": "string (HIGH|MEDIUM|LOW)",
+        "success_criterion": "string",
+        "estimated_hours": "number",
+        "created_at": "timestamp"
+      }
+    },
+    "plan_histories": {
+      "doc_id": "history_id",
+      "fields": {
+        "id": "string",
+        "plan_id": "string",
+        "title": "string",
+        "start_date": "string",
+        "end_date": "string",
+        "priority": "string",
+        "success_criterion": "string",
+        "estimated_hours": "number",
+        "updated_at": "timestamp"
+      }
+    },
+    "todos": {
+      "doc_id": "todo_id",
+      "fields": {
+        "plan_id": "string",
+        "title": "string",
+        "due_date": "string (YYYY-MM-DD)",
+        "priority": "string (HIGH|MEDIUM|LOW)",
+        "tags": "array of strings",
+        "estimated_hours": "number",
+        "status": "string (PENDING|COMPLETED)",
+        "idempotency_key": "string",
+        "is_deleted": "boolean",
+        "created_at": "timestamp"
+      }
+    },
+    "execution_logs": {
+      "doc_id": "log_id",
+      "fields": {
+        "todo_id": "string",
+        "start_time": "timestamp",
+        "end_time": "timestamp",
+        "actual_hours": "number",
+        "blocked_reason": "string (nullable)",
+        "created_at": "timestamp"
+      }
+    },
+    "retrospectives": {
+      "doc_id": "retro_id",
+      "fields": {
+        "next_action_item": "string",
+        "created_at": "timestamp"
+      }
+    }
+  }
+}

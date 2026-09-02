@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PDS TFT Diary</title>
   
-  <!-- Firebase v9 호환성 SDK & Crypto 라이브러리 -->
+  <!-- Firebase SDK & CryptoJS -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -13,89 +13,218 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/pbkdf2.min.js"></script>
 
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; background: #f4f6f8; }
-    .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto 20px; }
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --border: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; background: var(--bg); color: var(--text); }
+    .container { max-width: 800px; margin: 0 auto; }
+    .card { background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .hidden { display: none !important; }
-    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"] { width: 100%; padding: 12px; margin: 8px 0; box-sizing: border-box; border: 1px solid #d1d5db; border-radius: 6px; }
-    button { background: #4f46e5; color: white; border: none; padding: 12px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-    button.danger { background: #dc2626; width: auto; }
     
-    /* 탭 디자인 */
-    .tab-container { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
-    .tab-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; background: none; color: #6b7280; font-weight: bold; border: none; border-bottom: 3px solid transparent; width: auto; margin: 0; }
-    .tab-btn.active { color: #4f46e5; border-bottom-color: #4f46e5; }
+    /* Auth Form */
+    .tab-container { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+    .tab-btn { flex: 1; padding: 12px; text-align: center; cursor: pointer; background: none; color: #6b7280; font-weight: bold; border: none; border-bottom: 3px solid transparent; margin: 0; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
     
-    .item-list { list-style: none; padding: 0; }
-    .item-list li { background: #f9fafb; border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-    .summary-box { background: #eef2ff; border-left: 4px solid #4f46e5; padding: 12px; margin-top: 15px; border-radius: 4px; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], select {
+      width: 100%; padding: 10px 14px; margin: 6px 0 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;
+    }
+    
+    button { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: background 0.2s; }
+    button:hover { background: var(--primary-hover); }
+    button.danger { background: #dc2626; }
+    button.danger:hover { background: #b91c1c; }
+    button.secondary { background: #6b7280; }
+    button.secondary:hover { background: #4b5563; }
+    
+    /* Section Styles */
+    .section-title { font-size: 18px; font-weight: bold; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+    /* Lists */
+    .item-list { list-style: none; padding: 0; margin: 0; }
+    .item-list li { background: #f9fafb; border: 1px solid var(--border); padding: 12px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .item-list li.done { text-decoration: line-through; opacity: 0.6; }
+
+    /* Summary & Stats */
+    .summary-box { background: #eef2ff; border-left: 4px solid var(--primary); padding: 12px 16px; margin-top: 15px; border-radius: 4px; }
+    .badge { background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <!-- 인증 영역 (로그인 전 UI) -->
-  <div id="auth-section" class="card">
-    <div class="tab-container">
-      <button id="tab-login-btn" class="tab-btn active" onclick="switchTab('login')">로그인</button>
-      <button id="tab-signup-btn" class="tab-btn" onclick="switchTab('signup')">회원가입</button>
+  <div class="container">
+
+    <!-- 1. 인증 영역 (로그인/회원가입 전 UI) -->
+    <div id="auth-section" class="card" style="max-width: 450px; margin: 40px auto;">
+      <h2 style="text-align: center; margin-bottom: 20px;">PDS TFT Diary</h2>
+      <div class="tab-container">
+        <button id="tab-login-btn" class="tab-btn active" onclick="switchTab('login')">로그인</button>
+        <button id="tab-signup-btn" class="tab-btn" onclick="switchTab('signup')">회원가입</button>
+      </div>
+
+      <!-- 로그인 폼 -->
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <label>이메일</label>
+        <input type="email" id="login-email" placeholder="user@example.com" required>
+        <label>비밀번호</label>
+        <input type="password" id="login-password" placeholder="비밀번호 입력" required>
+        <button type="submit" style="width: 100%;">로그인</button>
+      </form>
+
+      <!-- 회원가입 폼 -->
+      <form id="signup-form" class="hidden" onsubmit="handleSignUp(event)">
+        <label>이메일</label>
+        <input type="email" id="signup-email" placeholder="사용할 이메일 주소" required>
+        <label>비밀번호 (6자리 이상)</label>
+        <input type="password" id="signup-password" placeholder="비밀번호" required>
+        <label>비밀번호 확인</label>
+        <input type="password" id="signup-password-confirm" placeholder="비밀번호 재입력" required>
+        <button type="submit" style="width: 100%; background: #10b981;">회원가입 완료</button>
+      </form>
     </div>
 
-    <!-- 로그인 폼 -->
-    <form id="login-form" onsubmit="handleLogin(event)">
-      <h3 style="margin-top:0;">로그인</h3>
-      <input type="email" id="login-email" placeholder="이메일 주소 (예: user@example.com)" required>
-      <input type="password" id="login-password" placeholder="비밀번호" required>
-      <button type="submit">로그인하기</button>
-    </form>
+    <!-- 2. 메인 애플리케이션 영역 (로그인 후 UI) -->
+    <div id="app-section" class="hidden">
 
-    <!-- 회원가입 폼 -->
-    <form id="signup-form" class="hidden" onsubmit="handleSignUp(event)">
-      <h3 style="margin-top:0;">새 계정 회원가입</h3>
-      <input type="email" id="signup-email" placeholder="사용할 이메일 주소" required>
-      <input type="password" id="signup-password" placeholder="비밀번호 (6자리 이상)" required>
-      <input type="password" id="signup-password-confirm" placeholder="비밀번호 확인" required>
-      <button type="submit" style="background: #10b981;">회원가입 완료</button>
-    </form>
-  </div>
+      <!-- 상단 유저 헤더 -->
+      <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px;">
+        <div>
+          <span style="font-size: 14px; color: #6b7280;">접속 계정:</span>
+          <strong id="user-display-info" style="font-size: 16px; margin-left: 6px;"></strong>
+        </div>
+        <button onclick="handleLogout()" class="danger">로그아웃</button>
+      </div>
 
-  <!-- 메인 애플리케이션 영역 (로그인 후 UI) -->
-  <div id="app-section" class="card hidden">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span id="user-display-info" style="font-weight: bold;"></span>
-      <button onclick="handleLogout()" class="danger">로그아웃</button>
+      <!-- TFT 티어 트래커 섹션 -->
+      <div class="card">
+        <div class="section-title">
+          🎮 TFT 티어 기록 (Tier Tracking)
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>현재 티어</label>
+            <select id="tft-current-tier">
+              <option value="아이언">아이언 (Iron)</option>
+              <option value="브론즈">브론즈 (Bronze)</option>
+              <option value="실버">실버 (Silver)</option>
+              <option value="골드">골드 (Gold)</option>
+              <option value="플래티넘">플래티넘 (Platinum)</option>
+              <option value="에메랄드">에메랄드 (Emerald)</option>
+              <option value="다이아몬드">다이아몬드 (Diamond)</option>
+              <option value="마스터">마스터 (Master)</option>
+              <option value="그랜드마스터">그랜드마스터 (Grandmaster)</option>
+              <option value="챌린저">챌린저 (Challenger)</option>
+            </select>
+          </div>
+          <div>
+            <label>목표 티어</label>
+            <select id="tft-target-tier">
+              <option value="골드">골드 (Gold)</option>
+              <option value="플래티넘">플래티넘 (Platinum)</option>
+              <option value="에메랄드">에메랄드 (Emerald)</option>
+              <option value="다이아몬드">다이아몬드 (Diamond)</option>
+              <option value="마스터">마스터 (Master)</option>
+              <option value="그랜드마스터">그랜드마스터 (Grandmaster)</option>
+              <option value="챌린저">챌린저 (Challenger)</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>현재 LP</label>
+            <input type="number" id="tft-lp" placeholder="예: 45">
+          </div>
+          <div>
+            <label>최근 순위 (1~8위)</label>
+            <input type="number" id="tft-recent-place" placeholder="예: 1">
+          </div>
+        </div>
+        <button onclick="saveTFTInfo()" style="width: 100%;">TFT 티어 정보 업데이트</button>
+
+        <div class="summary-box" style="margin-top: 15px;">
+          <strong>현재 저장된 TFT 현황:</strong>
+          <span id="tft-display-status">기록 없음</span>
+        </div>
+      </div>
+
+      <!-- PDS 일과 및 할 일 관리 섹션 -->
+      <div class="card">
+        <div class="section-title">
+          📋 PDS 일과 및 할 일 관리 (Plan-Do-See)
+        </div>
+        
+        <!-- 할 일 등록 폼 -->
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+          <input type="text" id="todo-input" placeholder="새로운 계획 또는 할 일을 입력하세요..." style="margin: 0;">
+          <button onclick="addTodo()" style="white-space: nowrap;">추가</button>
+        </div>
+
+        <!-- 할 일 목록 -->
+        <ul id="todo-list" class="item-list"></ul>
+      </div>
+
+      <!-- PDS 5일 기록 및 통계 세션 (평가 지표용) -->
+      <div class="card">
+        <div class="section-title">
+          📊 PDS 5일 실행 기록 및 통계
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>날짜 선택</label>
+            <input type="date" id="pds-date">
+          </div>
+          <div>
+            <label>목표 건수 (Plan)</label>
+            <input type="number" id="pds-target" placeholder="예: 10">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>실행 건수 (Do)</label>
+            <input type="number" id="pds-done" placeholder="예: 8">
+          </div>
+          <div style="display: flex; align-items: flex-end;">
+            <button onclick="savePDSRecord()" style="width: 100%; margin-bottom: 14px;">일자별 성과 저장</button>
+          </div>
+        </div>
+
+        <ul id="pds-list" class="item-list"></ul>
+
+        <div class="summary-box">
+          <strong>5일 기록 통계 (지표: 실행 달성률 %)</strong><br>
+          총 실행 합계: <span id="stat-sum">0</span>건<br>
+          평균 달성률: <span id="stat-avg">0</span>%
+        </div>
+      </div>
+
+      <!-- 계정 데이터 관리 및 내보내기/삭제 -->
+      <div class="card">
+        <div class="section-title">
+          ⚙️ 계정 및 데이터 관리
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button onclick="exportUserData()" class="secondary">내 데이터 내보내기 (.json)</button>
+          <button onclick="deleteUserAccount()" class="danger">계정 및 전체 데이터 삭제</button>
+        </div>
+        <p style="font-size: 12px; color: #6b7280; margin-top: 10px; margin-bottom: 0;">
+          * 계정 삭제 시 Firestore에 저장된 내 모든 PDS 일과, TFT 티어, 5일 기록이 즉시 영구 제거됩니다.
+        </p>
+      </div>
+
     </div>
-    <hr style="margin: 15px 0;">
 
-    <!-- PDS 5일치 일과 기록 및 지표 계산 -->
-    <h3>PDS 5일 기록 (지표: 달성률 %)</h3>
-    <div>
-      <input type="date" id="pds-date">
-      <input type="number" id="pds-target" placeholder="목표 건수 (예: 10)">
-      <input type="number" id="pds-done" placeholder="실행 건수 (예: 8)">
-      <button onclick="savePDSRecord()">기록 저장</button>
-    </div>
-
-    <ul id="pds-list" class="item-list"></ul>
-
-    <!-- 화면 자동 합계/평균 계산 대조 영역 -->
-    <div class="summary-box">
-      <strong>5일 기록 통계 (지표: 실행 달성률 %)</strong><br>
-      총 실행 합계: <span id="stat-sum">0</span>건<br>
-      평균 달성률: <span id="stat-avg">0</span>%
-    </div>
-
-    <hr style="margin: 20px 0;">
-
-    <!-- 내보내기 & 계정 삭제 섹션 -->
-    <h3>계정 데이터 관리</h3>
-    <button onclick="exportUserData()" style="background: #3b82f6; width: auto;">내 데이터 파일 내보내기 (.json)</button>
-    <button onclick="deleteUserAccount()" class="danger">계정 및 데이터 전체 삭제</button>
-    <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">
-      * 계정 삭제 시 Firestore에 저장된 내 모든 기록이 즉시 제거되며 복구할 수 없습니다.
-    </p>
   </div>
 
   <script>
-    // 실제 파이베이스 설정 정보
+    // Firebase Config 설정
     const firebaseConfig = {
       apiKey: "AIzaSyBigcKnHH1iioUAXJiXtCpdLzryxsTmHWw",
       authDomain: "tft-diary-2d76e.firebaseapp.com",
@@ -112,10 +241,10 @@
 
     let currentUser = null;
 
-    // 세션 지속성 설정 (브라우저 세션 기반)
+    // 세션 지속성 설정
     auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
-    // 탭 전환 로직 (로그인 / 회원가입)
+    // 탭 전환 (로그인 / 회원가입)
     function switchTab(type) {
       if(type === 'login') {
         document.getElementById('login-form').classList.remove('hidden');
@@ -130,46 +259,40 @@
       }
     }
 
-    // 1. 인증 상태 변경 감지
+    // 인증 상태 감지
     auth.onAuthStateChanged(user => {
       if (user) {
         currentUser = user;
         document.getElementById('auth-section').classList.add('hidden');
         document.getElementById('app-section').classList.remove('hidden');
-        document.getElementById('user-display-info').innerText = `${user.email} 계정`;
+        document.getElementById('user-display-info').innerText = user.email;
+        
+        // 유저 데이터 로드
+        loadTodos();
+        loadTFTInfo();
         loadPDSRecords();
       } else {
         currentUser = null;
         document.getElementById('auth-section').classList.remove('hidden');
         document.getElementById('app-section').classList.add('hidden');
-        document.getElementById('pds-list').innerHTML = '';
       }
     });
 
-    // PBKDF2 단방향 해시 키 생성 함수
-    function hashPassword(password, salt) {
-      return CryptoJS.PBKDF2(password, salt, { keySize: 256/32, iterations: 1000 }).toString();
-    }
-
-    // 2. 회원가입
+    // 회원가입
     function handleSignUp(e) {
       e.preventDefault();
       const email = document.getElementById('signup-email').value;
       const pass = document.getElementById('signup-password').value;
       const passConfirm = document.getElementById('signup-password-confirm').value;
 
-      if (pass !== passConfirm) {
-        return alert('비밀번호가 일치하지 않습니다.');
-      }
+      if (pass !== passConfirm) return alert('비밀번호가 일치하지 않습니다.');
 
       auth.createUserWithEmailAndPassword(email, pass)
-        .then(userCredential => {
-          alert('회원가입이 완료되어 자동으로 로그인되었습니다.');
-        })
+        .then(() => alert('회원가입이 완료되었습니다.'))
         .catch(err => alert('가입 실패: ' + err.message));
     }
 
-    // 3. 로그인
+    // 로그인
     function handleLogin(e) {
       e.preventDefault();
       const email = document.getElementById('login-email').value;
@@ -179,17 +302,96 @@
         .catch(err => alert('로그인 실패: ' + err.message));
     }
 
-    // 4. 로그아웃
+    // 로그아웃
     function handleLogout() {
-      auth.signOut().then(() => {
-        alert('로그아웃 되었습니다.');
+      auth.signOut().then(() => alert('로그아웃 되었습니다.'));
+    }
+
+    /* --- TFT 티어 기능 --- */
+    function saveTFTInfo() {
+      if(!currentUser) return;
+      const currentTier = document.getElementById('tft-current-tier').value;
+      const targetTier = document.getElementById('tft-target-tier').value;
+      const lp = parseInt(document.getElementById('tft-lp').value) || 0;
+      const recentPlace = parseInt(document.getElementById('tft-recent-place').value) || 0;
+
+      db.collection('users').doc(currentUser.uid).collection('tft').doc('profile').set({
+        currentTier, targetTier, lp, recentPlace, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        alert('TFT 정보가 저장되었습니다.');
+        loadTFTInfo();
       });
     }
 
-    // 5. PDS 데이터 저장 (격리된 사용자별 경로 users/{uid}/pds에 저장)
+    function loadTFTInfo() {
+      if(!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('tft').doc('profile').get().then(doc => {
+        if(doc.exists) {
+          const d = doc.data();
+          document.getElementById('tft-current-tier').value = d.currentTier || '아이언';
+          document.getElementById('tft-target-tier').value = d.targetTier || '골드';
+          document.getElementById('tft-lp').value = d.lp || 0;
+          document.getElementById('tft-recent-place').value = d.recentPlace || '';
+          document.getElementById('tft-display-status').innerHTML = 
+            `현재: <span class="badge">${d.currentTier} (${d.lp} LP)</span> ➔ 목표: <span class="badge">${d.targetTier}</span> (최근 순위: ${d.recentPlace ? d.recentPlace + '위' : '없음'})`;
+        } else {
+          document.getElementById('tft-display-status').innerText = '등록된 TFT 정보가 없습니다.';
+        }
+      });
+    }
+
+    /* --- PDS 일과 / Todo 기능 --- */
+    function addTodo() {
+      if(!currentUser) return;
+      const input = document.getElementById('todo-input');
+      const text = input.value.trim();
+      if(!text) return;
+
+      db.collection('users').doc(currentUser.uid).collection('todos').add({
+        text: text,
+        completed: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        input.value = '';
+        loadTodos();
+      });
+    }
+
+    function toggleTodo(id, currentStatus) {
+      if(!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('todos').doc(id).update({
+        completed: !currentStatus
+      }).then(() => loadTodos());
+    }
+
+    function deleteTodo(id) {
+      if(!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('todos').doc(id).delete().then(() => loadTodos());
+    }
+
+    function loadTodos() {
+      if(!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('todos').orderBy('createdAt', 'desc').get().then(snapshot => {
+        const list = document.getElementById('todo-list');
+        list.innerHTML = '';
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          const li = document.createElement('li');
+          if(d.completed) li.classList.add('done');
+          li.innerHTML = `
+            <span onclick="toggleTodo('${doc.id}', ${d.completed})" style="cursor:pointer; flex:1;">
+              ${d.completed ? '✅' : '⬜'} ${d.text}
+            </span>
+            <button onclick="deleteTodo('${doc.id}')" class="danger" style="padding: 4px 8px; font-size:12px;">삭제</button>
+          `;
+          list.appendChild(li);
+        });
+      });
+    }
+
+    /* --- PDS 5일 통계 기능 --- */
     function savePDSRecord() {
       if(!currentUser) return;
-
       const date = document.getElementById('pds-date').value;
       const target = parseFloat(document.getElementById('pds-target').value) || 0;
       const done = parseFloat(document.getElementById('pds-done').value) || 0;
@@ -199,92 +401,86 @@
       const rate = target > 0 ? Math.round((done / target) * 100) : 0;
 
       db.collection('users').doc(currentUser.uid).collection('pds').doc(date).set({
-        date: date,
-        target: target,
-        done: done,
-        rate: rate,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        loadPDSRecords();
-      }).catch(err => alert('저장 권한 거절: ' + err.message));
+        date, target, done, rate, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => loadPDSRecords());
     }
 
-    // 6. 데이터 로드 및 통계 계산
     function loadPDSRecords() {
       if(!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('pds').orderBy('date', 'asc').get().then(snapshot => {
+        const listEl = document.getElementById('pds-list');
+        listEl.innerHTML = '';
+        
+        let totalDone = 0;
+        let totalRateSum = 0;
+        let count = 0;
 
-      db.collection('users').doc(currentUser.uid).collection('pds')
-        .orderBy('date', 'asc')
-        .get()
-        .then(snapshot => {
-          const listEl = document.getElementById('pds-list');
-          listEl.innerHTML = '';
-          
-          let totalDone = 0;
-          let totalRateSum = 0;
-          let count = 0;
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          totalDone += data.done;
+          totalRateSum += data.rate;
+          count++;
 
-          snapshot.forEach(doc => {
-            const data = doc.data();
-            totalDone += data.done;
-            totalRateSum += data.rate;
-            count++;
-
-            const li = document.createElement('li');
-            li.innerHTML = `
-              <span><strong>${data.date}</strong> - 목표: ${data.target}건 / 실행: ${data.done}건 (달성률: ${data.rate}%)</span>
-              <button onclick="deleteRecord('${data.date}')" class="danger">삭제</button>
-            `;
-            listEl.appendChild(li);
-          });
-
-          // 합계 및 평균 (소수점 첫째자리 반올림)
-          document.getElementById('stat-sum').innerText = totalDone;
-          const avgRate = count > 0 ? (totalRateSum / count).toFixed(1) : 0;
-          document.getElementById('stat-avg').innerText = avgRate;
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span><strong>${data.date}</strong> - 목표: ${data.target}건 / 실행: ${data.done}건 (달성률: ${data.rate}%)</span>
+            <button onclick="deletePDSRecord('${data.date}')" class="danger" style="padding: 4px 8px; font-size:12px;">삭제</button>
+          `;
+          listEl.appendChild(li);
         });
-    }
 
-    function deleteRecord(dateDoc) {
-      if(!currentUser) return;
-      db.collection('users').doc(currentUser.uid).collection('pds').doc(dateDoc).delete().then(() => {
-        loadPDSRecords();
+        document.getElementById('stat-sum').innerText = totalDone;
+        document.getElementById('stat-avg').innerText = count > 0 ? (totalRateSum / count).toFixed(1) : 0;
       });
     }
 
-    // 7. 내 데이터 내보내기 (.json)
+    function deletePDSRecord(dateDoc) {
+      if(!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('pds').doc(dateDoc).delete().then(() => loadPDSRecords());
+    }
+
+    /* --- 내보내기 & 계정 삭제 --- */
     function exportUserData() {
       if(!currentUser) return;
-
-      db.collection('users').doc(currentUser.uid).collection('pds').get().then(snapshot => {
-        const data = [];
-        snapshot.forEach(doc => data.push(doc.data()));
-        
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `pds_export_${currentUser.uid}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
+      Promise.all([
+        db.collection('users').doc(currentUser.uid).collection('todos').get(),
+        db.collection('users').doc(currentUser.uid).collection('pds').get(),
+        db.collection('users').doc(currentUser.uid).collection('tft').doc('profile').get()
+      ]).then(([todosSnap, pdsSnap, tftDoc]) => {
+        const exportData = {
+          user: currentUser.email,
+          todos: todosSnap.docs.map(d => d.data()),
+          pds: pdsSnap.docs.map(d => d.data()),
+          tft: tftDoc.exists ? tftDoc.data() : null
+        };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pds_tft_backup_${currentUser.uid}.json`;
+        a.click();
       });
     }
 
-    // 8. 계정 삭제
     function deleteUserAccount() {
       if(!currentUser) return;
-      if(!confirm('정말로 계정과 모든 데이터를 삭제하시겠습니까?')) return;
+      if(!confirm('정말로 계정과 모든 기록을 삭제하시겠습니까?')) return;
 
       const uid = currentUser.uid;
-      db.collection('users').doc(uid).collection('pds').get().then(snapshot => {
-        const batch = db.batch();
-        snapshot.forEach(doc => batch.delete(doc.ref));
+      const batch = db.batch();
+
+      Promise.all([
+        db.collection('users').doc(uid).collection('todos').get(),
+        db.collection('users').doc(uid).collection('pds').get()
+      ]).then(([todosSnap, pdsSnap]) => {
+        todosSnap.forEach(doc => batch.delete(doc.ref));
+        pdsSnap.forEach(doc => batch.delete(doc.ref));
+        batch.delete(db.collection('users').doc(uid).collection('tft').doc('profile'));
         return batch.commit();
       }).then(() => {
         return currentUser.delete();
-      }).then(() => {
-        alert('계정이 완전히 삭제되었습니다.');
-      }).catch(err => alert('삭제 실패: ' + err.message));
+      }).then(() => alert('계정이 성공적으로 삭제되었습니다.'))
+      .catch(err => alert('삭제 실패: ' + err.message));
     }
   </script>
 </body>

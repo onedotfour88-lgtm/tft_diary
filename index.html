@@ -14,28 +14,50 @@
 
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; background: #f4f6f8; }
-    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto 20px; }
+    .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto 20px; }
     .hidden { display: none !important; }
-    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"] { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
-    button { background: #4f46e5; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
-    button.danger { background: #dc2626; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"] { width: 100%; padding: 12px; margin: 8px 0; box-sizing: border-box; border: 1px solid #d1d5db; border-radius: 6px; }
+    button { background: #4f46e5; color: white; border: none; padding: 12px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+    button.danger { background: #dc2626; width: auto; }
+    
+    /* 탭 디자인 */
+    .tab-container { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+    .tab-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; background: none; color: #6b7280; font-weight: bold; border: none; border-bottom: 3px solid transparent; width: auto; margin: 0; }
+    .tab-btn.active { color: #4f46e5; border-bottom-color: #4f46e5; }
+    
     .item-list { list-style: none; padding: 0; }
-    .item-list li { background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px; margin-bottom: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-    .summary-box { background: #eef2ff; border-left: 4px solid #4f46e5; padding: 10px; margin-top: 10px; }
+    .item-list li { background: #f9fafb; border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .summary-box { background: #eef2ff; border-left: 4px solid #4f46e5; padding: 12px; margin-top: 15px; border-radius: 4px; }
   </style>
 </head>
 <body>
 
-  <!-- 인증 영역 (로그인 전) -->
+  <!-- 인증 영역 (로그인 전 UI) -->
   <div id="auth-section" class="card">
-    <h2>PDS TFT Diary 로그인</h2>
-    <input type="email" id="auth-email" placeholder="이메일 입력">
-    <input type="password" id="auth-password" placeholder="비밀번호 입력">
-    <button onclick="handleLogin()">로그인</button>
-    <button onclick="handleSignUp()">회원가입</button>
+    <div class="tab-container">
+      <button id="tab-login-btn" class="tab-btn active" onclick="switchTab('login')">로그인</button>
+      <button id="tab-signup-btn" class="tab-btn" onclick="switchTab('signup')">회원가입</button>
+    </div>
+
+    <!-- 로그인 폼 -->
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <h3 style="margin-top:0;">로그인</h3>
+      <input type="email" id="login-email" placeholder="이메일 주소 (예: user@example.com)" required>
+      <input type="password" id="login-password" placeholder="비밀번호" required>
+      <button type="submit">로그인하기</button>
+    </form>
+
+    <!-- 회원가입 폼 -->
+    <form id="signup-form" class="hidden" onsubmit="handleSignUp(event)">
+      <h3 style="margin-top:0;">새 계정 회원가입</h3>
+      <input type="email" id="signup-email" placeholder="사용할 이메일 주소" required>
+      <input type="password" id="signup-password" placeholder="비밀번호 (6자리 이상)" required>
+      <input type="password" id="signup-password-confirm" placeholder="비밀번호 확인" required>
+      <button type="submit" style="background: #10b981;">회원가입 완료</button>
+    </form>
   </div>
 
-  <!-- 메인 애플리케이션 영역 (로그인 후) -->
+  <!-- 메인 애플리케이션 영역 (로그인 후 UI) -->
   <div id="app-section" class="card hidden">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <span id="user-display-info" style="font-weight: bold;"></span>
@@ -65,7 +87,7 @@
 
     <!-- 내보내기 & 계정 삭제 섹션 -->
     <h3>계정 데이터 관리</h3>
-    <button onclick="exportUserData()">내 데이터 파일 내보내기 (.json)</button>
+    <button onclick="exportUserData()" style="background: #3b82f6; width: auto;">내 데이터 파일 내보내기 (.json)</button>
     <button onclick="deleteUserAccount()" class="danger">계정 및 데이터 전체 삭제</button>
     <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">
       * 계정 삭제 시 Firestore에 저장된 내 모든 기록이 즉시 제거되며 복구할 수 없습니다.
@@ -73,7 +95,7 @@
   </div>
 
   <script>
-    // 전달해주신 발급 키 반영 Firebase 설정
+    // 실제 파이베이스 설정 정보
     const firebaseConfig = {
       apiKey: "AIzaSyBigcKnHH1iioUAXJiXtCpdLzryxsTmHWw",
       authDomain: "tft-diary-2d76e.firebaseapp.com",
@@ -92,6 +114,21 @@
 
     // 세션 지속성 설정 (브라우저 세션 기반)
     auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+
+    // 탭 전환 로직 (로그인 / 회원가입)
+    function switchTab(type) {
+      if(type === 'login') {
+        document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('signup-form').classList.add('hidden');
+        document.getElementById('tab-login-btn').classList.add('active');
+        document.getElementById('tab-signup-btn').classList.remove('active');
+      } else {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('signup-form').classList.remove('hidden');
+        document.getElementById('tab-login-btn').classList.remove('active');
+        document.getElementById('tab-signup-btn').classList.add('active');
+      }
+    }
 
     // 1. 인증 상태 변경 감지
     auth.onAuthStateChanged(user => {
@@ -115,25 +152,30 @@
     }
 
     // 2. 회원가입
-    function handleSignUp() {
-      const email = document.getElementById('auth-email').value;
-      const rawPassword = document.getElementById('auth-password').value;
+    function handleSignUp(e) {
+      e.preventDefault();
+      const email = document.getElementById('signup-email').value;
+      const pass = document.getElementById('signup-password').value;
+      const passConfirm = document.getElementById('signup-password-confirm').value;
 
-      if(!email || !rawPassword) return alert('이메일과 비밀번호를 입력해 주세요.');
+      if (pass !== passConfirm) {
+        return alert('비밀번호가 일치하지 않습니다.');
+      }
 
-      auth.createUserWithEmailAndPassword(email, rawPassword)
+      auth.createUserWithEmailAndPassword(email, pass)
         .then(userCredential => {
-          alert('회원가입이 완료되었습니다.');
+          alert('회원가입이 완료되어 자동으로 로그인되었습니다.');
         })
         .catch(err => alert('가입 실패: ' + err.message));
     }
 
     // 3. 로그인
-    function handleLogin() {
-      const email = document.getElementById('auth-email').value;
-      const rawPassword = document.getElementById('auth-password').value;
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
 
-      auth.signInWithEmailAndPassword(email, rawPassword)
+      auth.signInWithEmailAndPassword(email, pass)
         .catch(err => alert('로그인 실패: ' + err.message));
     }
 

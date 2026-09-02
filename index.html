@@ -8,44 +8,71 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg:#0f172a; --card:#1e293b; --text:#f8fafc; --accent:#38bdf8;
-      --border:#334155; --sub:#94a3b8; --danger:#f43f5e; --success:#10b981;
+      /* 첨부 이미지 원본의 짙은 보라/네이비 다크 테마 색상 정의 */
+      --bg: #090d16; 
+      --card: #131b2e; 
+      --border: #1e293b; 
+      --text: #f8fafc; 
+      --sub: #94a3b8; 
+      --accent: #38bdf8; 
+      --accent-hover: #0284c7; 
+      --danger: #ef4444; 
+      --success: #10b981;
     }
-    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin:0; padding:20px; line-height:1.5; }
-    .container { max-width: 900px; margin: 0 auto; }
-    .nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; flex-wrap: wrap; }
-    .nav button { background: none; border: none; color: var(--sub); font-size: 1rem; font-weight: bold; padding: 8px 16px; cursor: pointer; border-radius: 6px; }
+    body { 
+      font-family: system-ui, -apple-system, sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      margin: 0; 
+      padding: 24px 20px; 
+      line-height: 1.5; 
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    
+    .nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; flex-wrap: wrap; }
+    .nav button { background: none; border: none; color: var(--sub); font-size: 0.95rem; font-weight: 700; padding: 10px 18px; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+    .nav button:hover { color: #fff; background: rgba(255,255,255,0.05); }
     .nav button.active { background: var(--accent); color: #000; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-    h2 { margin-top:0; color: var(--accent); font-size: 1.25rem; }
+    
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    h2 { margin-top: 0; color: var(--accent); font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
-    input, select, textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; box-sizing: border-box; font-size: 0.9rem; }
-    button.btn-main { background: var(--accent); color: #000; font-weight: bold; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; width: 100%; }
-    button.btn-main:hover { opacity: 0.9; }
-    button.btn-sub { background: #334155; color: #fff; font-weight: bold; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
-    button.btn-sub:hover { background: #475569; }
-    button.btn-danger { background: var(--danger); color: #fff; font-weight: bold; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    label { font-size: 0.85rem; color: var(--sub); font-weight: 600; margin-bottom: 6px; display: block; }
+    input, select, textarea { width: 100%; padding: 10px 12px; background: #0b111e; border: 1px solid var(--border); border-radius: 6px; color: #fff; box-sizing: border-box; font-size: 0.9rem; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    
+    button.btn-main { background: var(--accent); color: #000; font-weight: 700; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 0.95rem; transition: background 0.2s; }
+    button.btn-main:hover { background: #7dd3fc; }
+    button.btn-sub { background: #1e293b; color: #fff; font-weight: 600; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+    button.btn-sub:hover { background: #334155; }
+    button.btn-danger { background: var(--danger); color: #fff; font-weight: 600; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; }
     button.btn-danger:hover { opacity: 0.9; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid var(--border); padding: 10px; text-align: left; font-size: 0.85rem; }
-    th { background: #0f172a; color: var(--accent); }
-    .badge { padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
-    .badge-p1 { background: #881337; color: #fda4af; }
-    .badge-p2 { background: #713f12; color: #fde047; }
-    .badge-p3 { background: #14532d; color: #86efac; }
-    .status-done { color: var(--success); text-decoration: line-through; }
-    .stat-card { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; transition: transform 0.1s; }
-    .stat-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-    .stat-num { font-size: 1.8rem; font-weight: bold; color: var(--accent); margin-top: 5px; }
-    .history-item { background: #0f172a; padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid var(--border); padding: 12px; text-align: left; font-size: 0.85rem; }
+    th { background: #0b111e; color: var(--accent); font-weight: 700; }
+    
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+    .badge-p1 { background: #ef4444; color: #fff; }
+    .badge-p2 { background: #eab308; color: #000; }
+    .badge-p3 { background: #10b981; color: #fff; }
+    .status-done { color: var(--sub); text-decoration: line-through; }
+    
+    .stat-card { background: #0b111e; border: 1px solid var(--border); border-radius: 8px; padding: 18px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+    .stat-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+    .stat-num { font-size: 2rem; font-weight: 800; color: var(--accent); margin-top: 6px; }
+    
+    .history-item { background: #0b111e; padding: 14px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
-    .modal-content { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; color: var(--text); }
     
-    /* 인증 UI 추가 스타일에 맞춰 다크모드 적용 */
-    .auth-tab { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
-    .auth-tab button { flex: 1; padding: 10px; background: none; border: none; color: var(--sub); font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); justify-content: center; align-items: center; }
+    .modal-content { background: var(--card); border: 1px solid var(--border); padding: 24px; border-radius: 12px; width: 90%; max-width: 500px; color: var(--text); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    
+    .auth-tab { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .auth-tab button { flex: 1; padding: 10px; background: none; border: none; color: var(--sub); font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; }
     .auth-tab button.active { color: var(--accent); border-bottom-color: var(--accent); }
     .hidden { display: none !important; }
   </style>
@@ -55,8 +82,8 @@
 <div class="container">
 
   <!-- 0. 로그인 / 회원가입 세션 -->
-  <div id="authContainer" class="card" style="max-width: 420px; margin: 40px auto;">
-    <h1 style="text-align:center; font-size: 1.5rem; color: var(--accent);">🎮 TFT PDS 다이어리</h1>
+  <div id="authContainer" class="card" style="max-width: 420px; margin: 60px auto;">
+    <h1 style="text-align:center; font-size: 1.5rem; color: var(--accent); margin-bottom:20px;">🎮 TFT PDS 다이어리</h1>
     <div class="auth-tab">
       <button id="authTabLogin" class="active" onclick="switchAuthTab('login')">로그인</button>
       <button id="authTabSignup" onclick="switchAuthTab('signup')">회원가입</button>
@@ -64,11 +91,11 @@
 
     <!-- 로그인 폼 -->
     <form id="loginForm" onsubmit="handleLogin(event)">
-      <div style="margin-bottom: 10px;">
+      <div style="margin-bottom: 12px;">
         <label>이메일</label>
         <input type="email" id="loginEmail" placeholder="user@example.com" required>
       </div>
-      <div style="margin-bottom: 15px;">
+      <div style="margin-bottom: 20px;">
         <label>비밀번호</label>
         <input type="password" id="loginPassword" placeholder="비밀번호" required>
       </div>
@@ -77,26 +104,28 @@
 
     <!-- 회원가입 폼 -->
     <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
-      <div style="margin-bottom: 10px;">
+      <div style="margin-bottom: 12px;">
         <label>이메일</label>
         <input type="email" id="signupEmail" placeholder="사용할 이메일" required>
       </div>
-      <div style="margin-bottom: 10px;">
+      <div style="margin-bottom: 12px;">
         <label>비밀번호 (6자리 이상)</label>
         <input type="password" id="signupPassword" placeholder="비밀번호" required>
       </div>
-      <div style="margin-bottom: 15px;">
+      <div style="margin-bottom: 20px;">
         <label>비밀번호 확인</label>
         <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
       </div>
-      <button type="submit" class="btn-main" style="background:var(--success);">회원가입</button>
+      <button type="submit" class="btn-main" style="background:var(--success); color:#fff;">회원가입</button>
     </form>
   </div>
 
   <!-- 메인 앱 섹션 -->
   <div id="appContainer" class="hidden">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap: wrap; gap:10px;">
-      <h1>🎮 TFT 다이어리 (잡레이너)</h1>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; flex-wrap: wrap; gap:12px;">
+      <h1 style="margin:0; font-size: 1.6rem; font-weight: 800; display:flex; align-items:center; gap:8px;">
+        🎮 TFT 다이어리 (잡레이너)
+      </h1>
       <div style="display:flex; gap:10px; align-items:center;">
         <span id="userEmailBadge" style="font-size: 0.85rem; color: var(--sub);"></span>
         <button id="exportBtn" class="btn-sub">📥 데이터 내보내기</button>
@@ -145,7 +174,7 @@
 
       <div class="card">
         <h2>📜 현재 적용된 계획</h2>
-        <div id="currentPlanDisplay" style="font-size:0.95rem;">불러오는 중...</div>
+        <div id="currentPlanDisplay" style="font-size:0.95rem; line-height: 1.6;">불러오는 중...</div>
       </div>
 
       <div class="card">
@@ -230,7 +259,7 @@
 
       <div class="card">
         <h2>📊 티어 변동 그래프 열람</h2>
-        <div style="background:#0f172a; padding:15px; border-radius:8px;">
+        <div style="background:#0b111e; padding:16px; border-radius:8px; border:1px solid var(--border);">
           <canvas id="tierChart" height="200"></canvas>
         </div>
       </div>
@@ -242,26 +271,26 @@
         <h2>📊 돌아보기 집계 (클릭 시 해당 기록으로 이동)</h2>
         <div class="grid">
           <div class="stat-card" onclick="filterAndGoTodo('ALL')">
-            <div>전체 계획 할 일</div>
+            <div style="color:var(--sub); font-size:0.85rem;">전체 계획 할 일</div>
             <div class="stat-num" id="statTotal">0</div>
           </div>
           <div class="stat-card" onclick="filterAndGoTodo('DONE')">
-            <div>완료 수</div>
+            <div style="color:var(--sub); font-size:0.85rem;">완료 수</div>
             <div class="stat-num" id="statDone">0</div>
           </div>
           <div class="stat-card" onclick="filterAndGoTodo('DELAYED')">
-            <div>지연 수</div>
+            <div style="color:var(--sub); font-size:0.85rem;">지연 수</div>
             <div class="stat-num" id="statDelayed" style="color:var(--danger)">0</div>
           </div>
           <div class="stat-card" onclick="filterAndGoTodo('BLOCKED')">
-            <div>막힘 수</div>
-            <div class="stat-num" id="statBlocked" style="color:#fde047">0</div>
+            <div style="color:var(--sub); font-size:0.85rem;">막힘 수</div>
+            <div class="stat-num" id="statBlocked" style="color:#eab308">0</div>
           </div>
         </div>
-        <div class="grid" style="margin-top:15px;">
+        <div class="grid" style="margin-top:12px;">
           <div class="stat-card">
-            <div>총 예상 시간 / 실제 시간 / 차이</div>
-            <div class="stat-num" id="statTimeDiff">0h / 0h (차이: 0h)</div>
+            <div style="color:var(--sub); font-size:0.85rem;">총 예상 시간 / 실제 시간 / 차이</div>
+            <div class="stat-num" id="statTimeDiff" style="font-size:1.5rem;">0h / 0h (차이: 0h)</div>
           </div>
         </div>
       </div>
@@ -269,11 +298,11 @@
       <div class="card">
         <h2>💡 돌아보기에서 다음 계획으로 넘길 한 줄</h2>
         <input type="text" id="nextActionInput" placeholder="예: 8레벨 리롤 타이밍에 돈 30원 미만으로 떨어뜨리지 않기">
-        <button class="btn-main" style="margin-top:10px;" onclick="saveNextAction()">다음 계획으로 전송하기</button>
-        <div id="nextActionDisplay" style="margin-top:10px; font-weight:bold; color:var(--success);"></div>
+        <button class="btn-main" style="margin-top:12px;" onclick="saveNextAction()">다음 계획으로 전송하기</button>
+        <div id="nextActionDisplay" style="margin-top:12px; font-weight:bold; color:var(--success);"></div>
       </div>
 
-      <div class="card" style="border-color: var(--danger);">
+      <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
         <h2 style="color: var(--danger);">⚠️ 계정 관리</h2>
         <button onclick="deleteAccount()" class="btn-danger">계정 및 모든 데이터 삭제</button>
       </div>
@@ -286,12 +315,12 @@
 <div id="historyModal" class="modal">
   <div class="modal-content">
     <h3 style="color:var(--accent); margin-top:0;">📜 저장되었던 이전 계획 상세</h3>
-    <div id="modalBody" style="font-size:0.95rem; margin-bottom:20px;"></div>
+    <div id="modalBody" style="font-size:0.95rem; margin-bottom:20px; line-height: 1.6;"></div>
     <button class="btn-main" onclick="closeModal()">닫기</button>
   </div>
 </div>
 
-<!-- Firebase SDK 및 로직 -->
+<!-- Firebase SDK 및 데이터 처리 로직 -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -318,7 +347,6 @@
   let tierRecords = [];
   let chartInstance = null;
 
-  // 인증 탭 전환
   window.switchAuthTab = function(type) {
     if(type === 'login') {
       document.getElementById('loginForm').classList.remove('hidden');
@@ -333,7 +361,6 @@
     }
   };
 
-  // 로그인 처리
   window.handleLogin = async function(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
@@ -345,7 +372,6 @@
     }
   };
 
-  // 회원가입 처리
   window.handleSignup = async function(e) {
     e.preventDefault();
     const email = document.getElementById('signupEmail').value;
@@ -362,12 +388,10 @@
     }
   };
 
-  // 로그아웃
   window.handleLogout = function() {
     signOut(auth);
   };
 
-  // 계정 삭제
   window.deleteAccount = async function() {
     if(!confirm('계정과 데이터 전체가 삭제됩니다. 계속하시겠습니까?')) return;
     try {
@@ -378,7 +402,6 @@
     }
   };
 
-  // Auth 상태 변화 변경 감지
   onAuthStateChanged(auth, async (user) => {
     if(user) {
       currentUser = user;
@@ -596,10 +619,11 @@
           label: '티어 LP 변동 추이',
           data: dataScores,
           borderColor: '#38bdf8',
-          backgroundColor: 'rgba(56, 189, 248, 0.2)',
+          backgroundColor: 'rgba(56, 189, 248, 0.15)',
           fill: true,
-          tension: 0.2,
-          pointRadius: 6
+          tension: 0.25,
+          pointRadius: 6,
+          pointBackgroundColor: '#38bdf8'
         }]
       },
       options: {
@@ -608,8 +632,8 @@
           legend: { labels: { color: '#f8fafc' } }
         },
         scales: {
-          x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
-          y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
         }
       }
     });
@@ -697,10 +721,10 @@
     const tbody = document.getElementById('todoTableBody');
     tbody.innerHTML = filtered.map(t => {
       const exec = executions.find(e => e.todoId === t.id);
-      const blockText = exec && exec.blockReason ? `<br><span style="color:#fde047; font-size:0.75rem;">⚠️ ${escapeHTML(exec.blockReason)}</span>` : '';
+      const blockText = exec && exec.blockReason ? `<br><span style="color:#eab308; font-size:0.75rem;">⚠️ ${escapeHTML(exec.blockReason)}</span>` : '';
       return `
         <tr>
-          <td><button onclick="toggleComplete('${t.id}')" style="background:none; border:1px solid var(--border); color:#fff; cursor:pointer;">${t.isCompleted ? '✅ 완료' : '⭕ 진행 중'}</button></td>
+          <td><button onclick="toggleComplete('${t.id}')" style="background:none; border:1px solid var(--border); color:#fff; cursor:pointer; padding: 4px 8px; border-radius:4px;">${t.isCompleted ? '✅ 완료' : '⭕ 진행 중'}</button></td>
           <td class="${t.isCompleted ? 'status-done' : ''}"><b>${escapeHTML(t.title)}</b></td>
           <td>${t.dueDate}</td>
           <td><span class="badge badge-${t.priority.toLowerCase()}">${t.priority}</span></td>
@@ -709,7 +733,7 @@
           <td>${exec ? `실제: ${exec.actualHours}h` : '미기록'} ${blockText}</td>
           <td>
             <button onclick="saveExecutionNote('${t.id}')" class="btn-sub" style="font-size:0.75rem;">실행기록</button>
-            <button onclick="deleteTodo('${t.id}')" style="background:var(--danger); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;">삭제</button>
+            <button onclick="deleteTodo('${t.id}')" class="btn-danger" style="font-size:0.75rem;">삭제</button>
           </td>
         </tr>
       `;

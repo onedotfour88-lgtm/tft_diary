@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PDS TFT Diary</title>
   
-  <!-- Firebase & Crypto Libraries -->
+  <!-- Firebase v9 호환성 SDK & Crypto 라이브러리 -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -16,7 +16,7 @@
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; background: #f4f6f8; }
     .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto 20px; }
     .hidden { display: none !important; }
-    input[type="text"], input[type="email"], input[type="password"], input[type="number"] { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"] { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
     button { background: #4f46e5; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
     button.danger { background: #dc2626; }
     .item-list { list-style: none; padding: 0; }
@@ -73,14 +73,15 @@
   </div>
 
   <script>
-    // Firebase Config (배포환경 시 개인 환경 변수로 주입)
+    // 전달해주신 발급 키 반영 Firebase 설정
     const firebaseConfig = {
-      apiKey: "AIzaSy_YOUR_API_KEY_HERE",
+      apiKey: "AIzaSyBigcKnHH1iioUAXJiXtCpdLzryxsTmHWw",
       authDomain: "tft-diary-2d76e.firebaseapp.com",
       projectId: "tft-diary-2d76e",
-      storageBucket: "tft-diary-2d76e.appspot.com",
-      messagingSenderId: "1234567890",
-      appId: "1:1234567890:web:abcdef123456"
+      storageBucket: "tft-diary-2d76e.firebasestorage.app",
+      messagingSenderId: "425413983426",
+      appId: "1:425413983426:web:a8b5f1920bfba06a064f5b",
+      measurementId: "G-DDW5JEQVZM"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -108,7 +109,7 @@
       }
     });
 
-    // PBKDF2 단방향 해시 키 생성 (제출 시 원문 노출 방지 보조)
+    // PBKDF2 단방향 해시 키 생성 함수
     function hashPassword(password, salt) {
       return CryptoJS.PBKDF2(password, salt, { keySize: 256/32, iterations: 1000 }).toString();
     }
@@ -153,7 +154,7 @@
 
       if(!date) return alert('날짜를 선택해 주세요.');
 
-      const rate = target > 0 ? Math.round((done / target) * 100) : 0; // 반올림 정수 처리
+      const rate = target > 0 ? Math.round((done / target) * 100) : 0;
 
       db.collection('users').doc(currentUser.uid).collection('pds').doc(date).set({
         date: date,
@@ -209,7 +210,7 @@
       });
     }
 
-    // 7. 내 보내기 (.json)
+    // 7. 내 데이터 내보내기 (.json)
     function exportUserData() {
       if(!currentUser) return;
 
@@ -233,7 +234,6 @@
       if(!confirm('정말로 계정과 모든 데이터를 삭제하시겠습니까?')) return;
 
       const uid = currentUser.uid;
-      // DB 삭제 후 계정 삭제
       db.collection('users').doc(uid).collection('pds').get().then(snapshot => {
         const batch = db.batch();
         snapshot.forEach(doc => batch.delete(doc.ref));

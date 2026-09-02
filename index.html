@@ -3,628 +3,247 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDS 다이어리 - TFT 잡레이너 시즌 목표</title>
-  <!-- Chart.js 라이브러리 (티어 변동 그래프용) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>PDS TFT Diary</title>
+  
+  <!-- Firebase & Crypto Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/pbkdf2.min.js"></script>
+
   <style>
-    :root {
-      --bg:#0f172a; --card:#1e293b; --text:#f8fafc; --accent:#38bdf8;
-      --border:#334155; --sub:#94a3b8; --danger:#f43f5e; --success:#10b981;
-    }
-    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin:0; padding:20px; line-height:1.5; }
-    .container { max-width: 900px; margin: 0 auto; }
-    .nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; flex-wrap: wrap; }
-    .nav button { background: none; border: none; color: var(--sub); font-size: 1rem; font-weight: bold; padding: 8px 16px; cursor: pointer; border-radius: 6px; }
-    .nav button.active { background: var(--accent); color: #000; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-    h2 { margin-top:0; color: var(--accent); font-size: 1.25rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
-    input, select, textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; box-sizing: border-box; font-size: 0.9rem; }
-    button.btn-main { background: var(--accent); color: #000; font-weight: bold; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; width: 100%; }
-    button.btn-main:hover { opacity: 0.9; }
-    button.btn-sub { background: #334155; color: #fff; font-weight: bold; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
-    button.btn-sub:hover { background: #475569; }
-    button.btn-danger { background: var(--danger); color: #fff; font-weight: bold; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
-    button.btn-danger:hover { opacity: 0.9; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid var(--border); padding: 10px; text-align: left; font-size: 0.85rem; }
-    th { background: #0f172a; color: var(--accent); }
-    .badge { padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
-    .badge-p1 { background: #881337; color: #fda4af; }
-    .badge-p2 { background: #713f12; color: #fde047; }
-    .badge-p3 { background: #14532d; color: #86efac; }
-    .status-done { color: var(--success); text-decoration: line-through; }
-    .stat-card { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; transition: transform 0.1s; }
-    .stat-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-    .stat-num { font-size: 1.8rem; font-weight: bold; color: var(--accent); margin-top: 5px; }
-    .history-item { background: #0f172a; padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
-    .modal-content { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; color: var(--text); }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; background: #f4f6f8; }
+    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto 20px; }
+    .hidden { display: none !important; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"] { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
+    button { background: #4f46e5; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+    button.danger { background: #dc2626; }
+    .item-list { list-style: none; padding: 0; }
+    .item-list li { background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px; margin-bottom: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .summary-box { background: #eef2ff; border-left: 4px solid #4f46e5; padding: 10px; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-    <h1>🎮 TFT 다이어리 (잡레이너)</h1>
-    <button id="exportBtn" class="btn-sub">📥 전체 데이터 JSON 내보내기</button>
+  <!-- 인증 영역 (로그인 전) -->
+  <div id="auth-section" class="card">
+    <h2>PDS TFT Diary 로그인</h2>
+    <input type="email" id="auth-email" placeholder="이메일 입력">
+    <input type="password" id="auth-password" placeholder="비밀번호 입력">
+    <button onclick="handleLogin()">로그인</button>
+    <button onclick="handleSignUp()">회원가입</button>
   </div>
 
-  <!-- 탭 메뉴 -->
-  <div class="nav">
-    <button class="nav-btn active" onclick="switchTab('planTab')">1. 계획 (Plan)</button>
-    <button class="nav-btn" onclick="switchTab('todoTab')">2. 할 일 (Do)</button>
-    <button class="nav-btn" onclick="switchTab('tierTab')">3. 티어 그래프 (Tier)</button>
-    <button class="nav-btn" onclick="switchTab('seeTab')">4. 돌아보기 (See)</button>
+  <!-- 메인 애플리케이션 영역 (로그인 후) -->
+  <div id="app-section" class="card hidden">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span id="user-display-info" style="font-weight: bold;"></span>
+      <button onclick="handleLogout()" class="danger">로그아웃</button>
+    </div>
+    <hr style="margin: 15px 0;">
+
+    <!-- PDS 5일치 일과 기록 및 지표 계산 -->
+    <h3>PDS 5일 기록 (지표: 달성률 %)</h3>
+    <div>
+      <input type="date" id="pds-date">
+      <input type="number" id="pds-target" placeholder="목표 건수 (예: 10)">
+      <input type="number" id="pds-done" placeholder="실행 건수 (예: 8)">
+      <button onclick="savePDSRecord()">기록 저장</button>
+    </div>
+
+    <ul id="pds-list" class="item-list"></ul>
+
+    <!-- 화면 자동 합계/평균 계산 대조 영역 -->
+    <div class="summary-box">
+      <strong>5일 기록 통계 (지표: 실행 달성률 %)</strong><br>
+      총 실행 합계: <span id="stat-sum">0</span>건<br>
+      평균 달성률: <span id="stat-avg">0</span>%
+    </div>
+
+    <hr style="margin: 20px 0;">
+
+    <!-- 내보내기 & 계정 삭제 섹션 -->
+    <h3>계정 데이터 관리</h3>
+    <button onclick="exportUserData()">내 데이터 파일 내보내기 (.json)</button>
+    <button onclick="deleteUserAccount()" class="danger">계정 및 데이터 전체 삭제</button>
+    <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">
+      * 계정 삭제 시 Firestore에 저장된 내 모든 기록이 즉시 제거되며 복구할 수 없습니다.
+    </p>
   </div>
 
-  <!-- 1. 계획 (Plan) 탭 -->
-  <div id="planTab" class="tab-content active">
-    <div class="card">
-      <h2>📌 시즌 계획 세우기</h2>
-      <div class="grid">
-        <div>
-          <label>계획명 (소환사: 잡레이너)</label>
-          <input type="text" id="planTitle" value="TFT 시즌 다이아 달성 및 승률 12.5% 유지">
-        </div>
-        <div>
-          <label>기간 (마감일)</label>
-          <input type="date" id="planPeriod" value="2026-10-31">
-        </div>
-        <div>
-          <label>우선순위</label>
-          <select id="planPriority"><option value="P1">P1 (높음)</option><option value="P2">P2 (보통)</option></select>
-        </div>
-      </div>
-      <div class="grid">
-        <div>
-          <label>성공 기준</label>
-          <input type="text" id="planCriteria" value="티어 다이아4 이상 / TOP4 비율 55% 이상">
-        </div>
-        <div>
-          <label>예상 시간 (시간 단위)</label>
-          <input type="number" id="planEstHours" value="150">
-        </div>
-      </div>
-      <button class="btn-main" onclick="savePlan()">계획 저장 / 수정하기</button>
-    </div>
+  <script>
+    // Firebase Config (배포환경 시 개인 환경 변수로 주입)
+    const firebaseConfig = {
+      apiKey: "AIzaSy_YOUR_API_KEY_HERE",
+      authDomain: "tft-diary-2d76e.firebaseapp.com",
+      projectId: "tft-diary-2d76e",
+      storageBucket: "tft-diary-2d76e.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:abcdef123456"
+    };
 
-    <div class="card">
-      <h2>📜 현재 적용된 계획</h2>
-      <div id="currentPlanDisplay" style="font-size:0.95rem;">불러오는 중...</div>
-    </div>
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    <div class="card">
-      <h2>📜 저장된 이전 계획 이력 열람 목록</h2>
-      <div id="planHistoryList">수정 이력이 없습니다.</div>
-    </div>
-  </div>
+    let currentUser = null;
 
-  <!-- 2. 할 일 (Do) 탭 -->
-  <div id="todoTab" class="tab-content">
-    <div class="card">
-      <h2>➕ 할 일 추가</h2>
-      <div class="grid">
-        <div><label>할 일 내용</label><input type="text" id="todoTitle" placeholder="예: 메타 덱 3개 증강체 타이밍 복기"></div>
-        <div><label>마감일</label><input type="date" id="todoDueDate"></div>
-        <div>
-          <label>우선순위</label>
-          <select id="todoPriority"><option value="P1">P1</option><option value="P2" selected>P2</option><option value="P3">P3</option></select>
-        </div>
-      </div>
-      <div class="grid">
-        <div><label>태그</label><input type="text" id="todoTag" placeholder="운영, 피드백, 덱분석"></div>
-        <div><label>예상 시간(시간)</label><input type="number" id="todoEst" value="1" step="0.5"></div>
-      </div>
-      <button class="btn-main" onclick="addTodo()">할 일 등록</button>
-    </div>
+    // 세션 지속성 설정 (브라우저 세션 기반)
+    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
-    <div class="card">
-      <h2>🔍 검색 / 거르기 / 정렬</h2>
-      <div class="grid">
-        <div><label>검색어</label><input type="text" id="searchInput" oninput="renderTodos()" placeholder="제목 또는 태그 검색"></div>
-        <div>
-          <label>상태 필터</label>
-          <select id="filterStatus" onchange="renderTodos()">
-            <option value="ALL">전체 보기</option>
-            <option value="ACTIVE">진행 중만</option>
-            <option value="DONE">완료됨만</option>
-          </select>
-        </div>
-        <div>
-          <label>정렬 기준</label>
-          <select id="sortBy" onchange="renderTodos()">
-            <option value="dueDate">마감일 오름차순 (빠른순)</option>
-            <option value="priority">우선순위 높은순 (P1->P3)</option>
-            <option value="estHours">예상 시간 많은순</option>
-          </select>
-        </div>
-      </div>
+    // 1. 인증 상태 변경 감지
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('app-section').classList.remove('hidden');
+        document.getElementById('user-display-info').innerText = `${user.email} 계정`;
+        loadPDSRecords();
+      } else {
+        currentUser = null;
+        document.getElementById('auth-section').classList.remove('hidden');
+        document.getElementById('app-section').classList.add('hidden');
+        document.getElementById('pds-list').innerHTML = '';
+      }
+    });
 
-      <table>
-        <thead>
-          <tr>
-            <th>상태</th><th>할 일</th><th>마감일</th><th>우선순위</th><th>태그</th><th>예상</th><th>실행/막힘</th><th>작업</th>
-          </tr>
-        </thead>
-        <tbody id="todoTableBody"></tbody>
-      </table>
-    </div>
-  </div>
+    // PBKDF2 단방향 해시 키 생성 (제출 시 원문 노출 방지 보조)
+    function hashPassword(password, salt) {
+      return CryptoJS.PBKDF2(password, salt, { keySize: 256/32, iterations: 1000 }).toString();
+    }
 
-  <!-- 3. 티어 변동 그래프 (Tier) 탭 -->
-  <div id="tierTab" class="tab-content">
-    <div class="card">
-      <h2>📈 티어 LP 기록 입력</h2>
-      <div class="grid">
-        <div><label>날짜</label><input type="date" id="tierDate"></div>
-        <div>
-          <label>티어 선택</label>
-          <select id="tierName">
-            <option value="실버">실버</option>
-            <option value="골드" selected>골드</option>
-            <option value="플래티넘">플래티넘</option>
-            <option value="에메랄드">에메랄드</option>
-            <option value="다이아몬드">다이아몬드</option>
-          </select>
-        </div>
-        <div><label>세부 단계 (4~1단계)</label><input type="number" id="tierDivision" value="2" min="1" max="4"></div>
-        <div><label>LP (0~99)</label><input type="number" id="tierLp" value="45" min="0" max="99"></div>
-      </div>
-      <button class="btn-main" onclick="addTierRecord()">티어 기록 저장</button>
-    </div>
+    // 2. 회원가입
+    function handleSignUp() {
+      const email = document.getElementById('auth-email').value;
+      const rawPassword = document.getElementById('auth-password').value;
 
-    <div class="card">
-      <h2>📊 티어 변동 그래프 열람</h2>
-      <div style="background:#0f172a; padding:15px; border-radius:8px;">
-        <canvas id="tierChart" height="200"></canvas>
-      </div>
-    </div>
-  </div>
+      if(!email || !rawPassword) return alert('이메일과 비밀번호를 입력해 주세요.');
 
-  <!-- 4. 돌아보기 (See) 탭 -->
-  <div id="seeTab" class="tab-content">
-    <div class="card">
-      <h2>📊 돌아보기 집계 (클릭 시 해당 기록으로 이동)</h2>
-      <div class="grid">
-        <div class="stat-card" onclick="filterAndGoTodo('ALL')">
-          <div>전체 계획 할 일</div>
-          <div class="stat-num" id="statTotal">0</div>
-        </div>
-        <div class="stat-card" onclick="filterAndGoTodo('DONE')">
-          <div>완료 수</div>
-          <div class="stat-num" id="statDone">0</div>
-        </div>
-        <div class="stat-card" onclick="filterAndGoTodo('DELAYED')">
-          <div>지연 수</div>
-          <div class="stat-num" id="statDelayed" style="color:var(--danger)">0</div>
-        </div>
-        <div class="stat-card" onclick="filterAndGoTodo('BLOCKED')">
-          <div>막힘 수</div>
-          <div class="stat-num" id="statBlocked" style="color:#fde047">0</div>
-        </div>
-      </div>
-      <div class="grid" style="margin-top:15px;">
-        <div class="stat-card">
-          <div>총 예상 시간 / 실제 시간 / 차이</div>
-          <div class="stat-num" id="statTimeDiff">0h / 0h (차이: 0h)</div>
-        </div>
-      </div>
-    </div>
+      auth.createUserWithEmailAndPassword(email, rawPassword)
+        .then(userCredential => {
+          alert('회원가입이 완료되었습니다.');
+        })
+        .catch(err => alert('가입 실패: ' + err.message));
+    }
 
-    <div class="card">
-      <h2>💡 돌아보기에서 다음 계획으로 넘길 한 줄</h2>
-      <input type="text" id="nextActionInput" placeholder="예: 8레벨 리롤 타이밍에 돈 30원 미만으로 떨어뜨리지 않기">
-      <button class="btn-main" style="margin-top:10px;" onclick="saveNextAction()">다음 계획으로 전송하기</button>
-      <div id="nextActionDisplay" style="margin-top:10px; font-weight:bold; color:var(--success);"></div>
-    </div>
-  </div>
-</div>
+    // 3. 로그인
+    function handleLogin() {
+      const email = document.getElementById('auth-email').value;
+      const rawPassword = document.getElementById('auth-password').value;
 
-<!-- 이전 계획 상세 열람 모달 -->
-<div id="historyModal" class="modal">
-  <div class="modal-content">
-    <h3 style="color:var(--accent); margin-top:0;">📜 저장되었던 이전 계획 상세</h3>
-    <div id="modalBody" style="font-size:0.95rem; margin-bottom:20px;"></div>
-    <button class="btn-main" onclick="closeModal()">닫기</button>
-  </div>
-</div>
+      auth.signInWithEmailAndPassword(email, rawPassword)
+        .catch(err => alert('로그인 실패: ' + err.message));
+    }
 
-<!-- Firebase SDK 및 전체 스크립트 -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBigKnHH1iioUAXJiXtCpdLzryxsTmHwW",
-    authDomain: "tft-diary-2d76e.firebaseapp.com",
-    projectId: "tft-diary-2d76e",
-    storageBucket: "tft-diary-2d76e.firebasestorage.app",
-    messagingSenderId: "425413983426",
-    appId: "1:425413983426:web:3f0f091c47cdb092064f5b"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  let plansHistory = [];
-  let currentPlan = null;
-  let todos = [];
-  let executions = [];
-  let tierRecords = [];
-  let chartInstance = null;
-
-  function escapeHTML(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-  }
-
-  window.switchTab = function(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    if (event && event.target) event.target.classList.add('active');
-    if (tabId === 'tierTab') renderTierChart();
-  };
-
-  async function initSeedData() {
-    const planRef = doc(db, "pds_plans", "main_plan");
-    const planSnap = await getDoc(planRef);
-
-    if (!planSnap.exists()) {
-      const initialPlan = {
-        id: "main_plan",
-        title: "TFT 시즌 다이아 달성 및 승률 12.5% 유지 (소환사: 잡레이너)",
-        period: "2026-10-31",
-        priority: "P1",
-        criteria: "티어 다이아4 이상 / TOP4 비율 55% 이상",
-        estHours: 150,
-        nextAction: "",
-        updatedAt: new Date().toISOString()
-      };
-      await setDoc(planRef, initialPlan);
-
-      await setDoc(doc(db, "pds_plan_history", "hist_1"), {
-        ...initialPlan,
-        historyId: "hist_1",
-        savedAt: new Date().toISOString()
+    // 4. 로그아웃
+    function handleLogout() {
+      auth.signOut().then(() => {
+        alert('로그아웃 되었습니다.');
       });
-
-      const initialTiers = [
-        { id: "tr_1", date: "2026-08-20", tierName: "골드", division: 3, lp: 20, score: 1220 },
-        { id: "tr_2", date: "2026-08-25", tierName: "골드", division: 1, lp: 85, score: 1385 },
-        { id: "tr_3", date: "2026-08-30", tierName: "플래티넘", division: 4, lp: 40, score: 1440 }
-      ];
-      for (const tr of initialTiers) {
-        await setDoc(doc(db, "pds_tier_records", tr.id), tr);
-      }
-    }
-  }
-
-  async function loadAllData() {
-    const planSnap = await getDoc(doc(db, "pds_plans", "main_plan"));
-    if (planSnap.exists()) {
-      currentPlan = planSnap.data();
-      document.getElementById('planTitle').value = currentPlan.title;
-      document.getElementById('planPeriod').value = currentPlan.period;
-      document.getElementById('planPriority').value = currentPlan.priority;
-      document.getElementById('planCriteria').value = currentPlan.criteria;
-      document.getElementById('planEstHours').value = currentPlan.estHours;
-
-      const nextActionText = currentPlan.nextAction ? `<br><b style="color:var(--success);">💡 피드백/전송된 한 줄:</b> ${escapeHTML(currentPlan.nextAction)}` : '';
-
-      document.getElementById('currentPlanDisplay').innerHTML = `
-        <b>목표:</b> ${escapeHTML(currentPlan.title)} | <b>기간:</b> ${currentPlan.period} | <b>우선순위:</b> ${currentPlan.priority}<br>
-        <b>성공기준:</b> ${escapeHTML(currentPlan.criteria)} | <b>예상시간:</b> ${currentPlan.estHours}시간 ${nextActionText}
-      `;
-
-      if (currentPlan.nextAction) {
-        document.getElementById('nextActionDisplay').textContent = "👉 다음 계획으로 넘어간 한 줄: " + currentPlan.nextAction;
-      }
     }
 
-    const historySnap = await getDocs(collection(db, "pds_plan_history"));
-    plansHistory = [];
-    historySnap.forEach(d => plansHistory.push(d.data()));
-    
-    // 저장시각 기준 내림차순 정렬 (최신순)
-    plansHistory.sort((a,b) => (b.savedAt || '').localeCompare(a.savedAt || ''));
+    // 5. PDS 데이터 저장 (격리된 사용자별 경로 users/{uid}/pds에 저장)
+    function savePDSRecord() {
+      if(!currentUser) return;
 
-    document.getElementById('planHistoryList').innerHTML = plansHistory.map(h => `
-      <div class="history-item">
-        <div style="flex:1;">
-          <b>[저장시각: ${new Date(h.savedAt).toLocaleString()}]</b> - ${escapeHTML(h.title)}
-        </div>
-        <div style="display:flex; gap:6px;">
-          <button class="btn-sub" onclick="viewHistoryDetail('${h.historyId}')">상세 열람</button>
-          <button class="btn-danger" onclick="deletePlanHistory('${h.historyId}')">삭제</button>
-        </div>
-      </div>
-    `).join('') || '이력이 없습니다.';
+      const date = document.getElementById('pds-date').value;
+      const target = parseFloat(document.getElementById('pds-target').value) || 0;
+      const done = parseFloat(document.getElementById('pds-done').value) || 0;
 
-    const todoSnap = await getDocs(collection(db, "pds_todos"));
-    todos = [];
-    todoSnap.forEach(d => todos.push(d.data()));
+      if(!date) return alert('날짜를 선택해 주세요.');
 
-    const execSnap = await getDocs(collection(db, "pds_executions"));
-    executions = [];
-    execSnap.forEach(d => executions.push(d.data()));
+      const rate = target > 0 ? Math.round((done / target) * 100) : 0; // 반올림 정수 처리
 
-    const tierSnap = await getDocs(collection(db, "pds_tier_records"));
-    tierRecords = [];
-    tierSnap.forEach(d => tierRecords.push(d.data()));
-    tierRecords.sort((a,b) => a.date.localeCompare(b.date));
+      db.collection('users').doc(currentUser.uid).collection('pds').doc(date).set({
+        date: date,
+        target: target,
+        done: done,
+        rate: rate,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        loadPDSRecords();
+      }).catch(err => alert('저장 권한 거절: ' + err.message));
+    }
 
-    renderTodos();
-    renderStats();
-  }
+    // 6. 데이터 로드 및 통계 계산
+    function loadPDSRecords() {
+      if(!currentUser) return;
 
-  window.viewHistoryDetail = function(historyId) {
-    const item = plansHistory.find(h => h.historyId === historyId);
-    if (!item) return;
-    document.getElementById('modalBody').innerHTML = `
-      <p><b>저장 일시:</b> ${new Date(item.savedAt).toLocaleString()}</p>
-      <p><b>계획명:</b> ${escapeHTML(item.title)}</p>
-      <p><b>마감 기간:</b> ${item.period}</p>
-      <p><b>우선순위:</b> ${item.priority}</p>
-      <p><b>성공 기준:</b> ${escapeHTML(item.criteria)}</p>
-      <p><b>예상 시간:</b> ${item.estHours}시간</p>
-      <p style="color:var(--success);"><b>💡 넘겨받은 한 줄 피드백:</b> ${escapeHTML(item.nextAction || '없음')}</p>
-    `;
-    document.getElementById('historyModal').style.display = 'flex';
-  };
+      db.collection('users').doc(currentUser.uid).collection('pds')
+        .orderBy('date', 'asc')
+        .get()
+        .then(snapshot => {
+          const listEl = document.getElementById('pds-list');
+          listEl.innerHTML = '';
+          
+          let totalDone = 0;
+          let totalRateSum = 0;
+          let count = 0;
 
-  // 이력 삭제 기능 추가
-  window.deletePlanHistory = async function(historyId) {
-    if (!confirm('이 이력 기록을 정말 삭제하시겠습니까?')) return;
-    await deleteDoc(doc(db, "pds_plan_history", historyId));
-    alert('이력 기록이 삭제되었습니다.');
-    loadAllData();
-  };
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            totalDone += data.done;
+            totalRateSum += data.rate;
+            count++;
 
-  window.closeModal = function() {
-    document.getElementById('historyModal').style.display = 'none';
-  };
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <span><strong>${data.date}</strong> - 목표: ${data.target}건 / 실행: ${data.done}건 (달성률: ${data.rate}%)</span>
+              <button onclick="deleteRecord('${data.date}')" class="danger">삭제</button>
+            `;
+            listEl.appendChild(li);
+          });
 
-  window.savePlan = async function() {
-    const updatedPlan = {
-      id: "main_plan",
-      title: document.getElementById('planTitle').value,
-      period: document.getElementById('planPeriod').value,
-      priority: document.getElementById('planPriority').value,
-      criteria: document.getElementById('planCriteria').value,
-      estHours: parseFloat(document.getElementById('planEstHours').value) || 0,
-      nextAction: currentPlan ? (currentPlan.nextAction || "") : "",
-      updatedAt: new Date().toISOString()
-    };
-
-    await setDoc(doc(db, "pds_plans", "main_plan"), updatedPlan);
-
-    const historyId = "hist_" + Date.now();
-    await setDoc(doc(db, "pds_plan_history", historyId), {
-      ...updatedPlan,
-      historyId: historyId,
-      savedAt: new Date().toISOString()
-    });
-
-    alert('계획이 저장되었습니다!');
-    loadAllData();
-  };
-
-  function calculateTierScore(tierName, division, lp) {
-    const baseScores = { "실버": 800, "골드": 1200, "플래티넘": 1600, "에메랄드": 2000, "다이아몬드": 2400 };
-    const divScore = (4 - parseInt(division)) * 100;
-    return (baseScores[tierName] || 1000) + divScore + parseInt(lp);
-  }
-
-  window.addTierRecord = async function() {
-    const date = document.getElementById('tierDate').value || new Date().toISOString().split('T')[0];
-    const tierName = document.getElementById('tierName').value;
-    const division = parseInt(document.getElementById('tierDivision').value);
-    const lp = parseInt(document.getElementById('tierLp').value);
-    const score = calculateTierScore(tierName, division, lp);
-
-    const recordId = "tr_" + Date.now();
-    await setDoc(doc(db, "pds_tier_records", recordId), {
-      id: recordId, date, tierName, division, lp, score
-    });
-
-    alert('티어 기록이 저장되었습니다!');
-    loadAllData();
-    renderTierChart();
-  };
-
-  function renderTierChart() {
-    const ctx = document.getElementById('tierChart').getContext('2d');
-    if (chartInstance) chartInstance.destroy();
-
-    const labels = tierRecords.map(r => `${r.date}\n(${r.tierName}${r.division})`);
-    const dataScores = tierRecords.map(r => r.score);
-
-    chartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: '티어 LP 변동 추이',
-          data: dataScores,
-          borderColor: '#38bdf8',
-          backgroundColor: 'rgba(56, 189, 248, 0.2)',
-          fill: true,
-          tension: 0.2,
-          pointRadius: 6
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { labels: { color: '#f8fafc' } }
-        },
-        scales: {
-          x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
-          y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
-        }
-      }
-    });
-  }
-
-  window.addTodo = async function() {
-    const title = document.getElementById('todoTitle').value;
-    if (!title) return alert('할 일 내용을 입력하세요');
-
-    const newTodo = {
-      id: "todo_" + Date.now(),
-      title: title,
-      dueDate: document.getElementById('todoDueDate').value || "2026-10-31",
-      priority: document.getElementById('todoPriority').value,
-      tag: document.getElementById('todoTag').value || "일반",
-      estHours: parseFloat(document.getElementById('todoEst').value) || 1,
-      isCompleted: false
-    };
-
-    await setDoc(doc(db, "pds_todos", newTodo.id), newTodo);
-    document.getElementById('todoTitle').value = '';
-    loadAllData();
-  };
-
-  window.toggleComplete = async function(todoId) {
-    const todo = todos.find(t => t.id === todoId);
-    if (!todo) return;
-
-    if (todo.isCompleted) {
-      await updateDoc(doc(db, "pds_todos", todoId), { isCompleted: false });
-    } else {
-      await updateDoc(doc(db, "pds_todos", todoId), { isCompleted: true });
-      const execId = "exec_" + todoId; 
-      const execSnap = await getDoc(doc(db, "pds_executions", execId));
-      if (!execSnap.exists()) {
-        await setDoc(doc(db, "pds_executions", execId), {
-          id: execId, todoId: todoId,
-          startTime: new Date().toISOString().slice(0, 16),
-          endTime: new Date().toISOString().slice(0, 16),
-          actualHours: todo.estHours, blockReason: ""
+          // 합계 및 평균 (소수점 첫째자리 반올림)
+          document.getElementById('stat-sum').innerText = totalDone;
+          const avgRate = count > 0 ? (totalRateSum / count).toFixed(1) : 0;
+          document.getElementById('stat-avg').innerText = avgRate;
         });
-      }
     }
-    loadAllData();
-  };
 
-  window.deleteTodo = async function(todoId) {
-    if (!confirm('삭제하시겠습니까?')) return;
-    await deleteDoc(doc(db, "pds_todos", todoId));
-    loadAllData();
-  };
-
-  window.saveExecutionNote = async function(todoId) {
-    const actualHours = parseFloat(prompt('실제로 걸린 시간을 입력하세요 (시간)', '1.5')) || 0;
-    const blockReason = prompt('막혔던 이유를 입력하세요', '8레벨 리롤 시 돈 부족');
-
-    const execId = "exec_" + todoId;
-    await setDoc(doc(db, "pds_executions", execId), {
-      id: execId, todoId: todoId,
-      startTime: new Date().toISOString().slice(0, 16),
-      endTime: new Date().toISOString().slice(0, 16),
-      actualHours: actualHours, blockReason: blockReason || ""
-    });
-    loadAllData();
-  };
-
-  window.renderTodos = function() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const filter = document.getElementById('filterStatus').value;
-    const sortBy = document.getElementById('sortBy').value;
-
-    let filtered = todos.filter(t => {
-      const matchSearch = t.title.toLowerCase().includes(search) || t.tag.toLowerCase().includes(search);
-      if (filter === 'ACTIVE') return matchSearch && !t.isCompleted;
-      if (filter === 'DONE') return matchSearch && t.isCompleted;
-      return matchSearch;
-    });
-
-    filtered.sort((a, b) => {
-      if (sortBy === 'dueDate') return a.dueDate.localeCompare(b.dueDate);
-      if (sortBy === 'priority') return a.priority.localeCompare(b.priority);
-      if (sortBy === 'estHours') return b.estHours - a.estHours;
-    });
-
-    const tbody = document.getElementById('todoTableBody');
-    tbody.innerHTML = filtered.map(t => {
-      const exec = executions.find(e => e.todoId === t.id);
-      const blockText = exec && exec.blockReason ? `<br><span style="color:#fde047; font-size:0.75rem;">⚠️ ${escapeHTML(exec.blockReason)}</span>` : '';
-      return `
-        <tr>
-          <td><button onclick="toggleComplete('${t.id}')" style="background:none; border:1px solid var(--border); color:#fff; cursor:pointer;">${t.isCompleted ? '✅ 완료' : '⭕ 진행 중'}</button></td>
-          <td class="${t.isCompleted ? 'status-done' : ''}"><b>${escapeHTML(t.title)}</b></td>
-          <td>${t.dueDate}</td>
-          <td><span class="badge badge-${t.priority.toLowerCase()}">${t.priority}</span></td>
-          <td>${escapeHTML(t.tag)}</td>
-          <td>${t.estHours}h</td>
-          <td>${exec ? `실제: ${exec.actualHours}h` : '미기록'} ${blockText}</td>
-          <td>
-            <button onclick="saveExecutionNote('${t.id}')" class="btn-sub" style="font-size:0.75rem;">실행기록</button>
-            <button onclick="deleteTodo('${t.id}')" style="background:var(--danger); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;">삭제</button>
-          </td>
-        </tr>
-      `;
-    }).join('') || '<tr><td colspan="8" style="text-align:center;">할 일이 없습니다.</td></tr>';
-  };
-
-  function renderStats() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('statTotal').textContent = todos.length;
-    document.getElementById('statDone').textContent = todos.filter(t => t.isCompleted).length;
-    document.getElementById('statDelayed').textContent = todos.filter(t => !t.isCompleted && t.dueDate < today).length;
-    document.getElementById('statBlocked').textContent = todos.filter(t => executions.some(e => e.todoId === t.id && e.blockReason && e.blockReason.trim() !== '')).length;
-
-    const totalEst = todos.reduce((sum, t) => sum + (t.estHours || 0), 0);
-    const totalActual = executions.reduce((sum, e) => sum + (e.actualHours || 0), 0);
-    document.getElementById('statTimeDiff').textContent = `${totalEst}h / ${totalActual}h (차이: ${(totalActual - totalEst).toFixed(1)}h)`;
-  }
-
-  window.filterAndGoTodo = function(filterType) {
-    document.getElementById('filterStatus').value = filterType;
-    switchTab('todoTab');
-    renderTodos();
-  };
-
-  window.saveNextAction = async function() {
-    const text = document.getElementById('nextActionInput').value;
-    if (!text) return alert('한 줄을 입력해 주세요.');
-    
-    if (currentPlan) {
-      currentPlan.nextAction = text;
-      await updateDoc(doc(db, "pds_plans", "main_plan"), { nextAction: text });
-
-      const historyId = "hist_" + Date.now();
-      await setDoc(doc(db, "pds_plan_history", historyId), {
-        ...currentPlan,
-        historyId: historyId,
-        savedAt: new Date().toISOString()
+    function deleteRecord(dateDoc) {
+      if(!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('pds').doc(dateDoc).delete().then(() => {
+        loadPDSRecords();
       });
     }
 
-    await setDoc(doc(db, "pds_next_actions", "action_1"), { text, createdAt: new Date().toISOString() });
-    alert('다음 계획으로 전송되었습니다!');
-    loadAllData();
-  };
+    // 7. 내 보내기 (.json)
+    function exportUserData() {
+      if(!currentUser) return;
 
-  document.getElementById('exportBtn').addEventListener('click', () => {
-    const exportData = { plan: currentPlan, planHistory: plansHistory, todos, executions, tierRecords };
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `PDS_Backup_${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-  });
+      db.collection('users').doc(currentUser.uid).collection('pds').get().then(snapshot => {
+        const data = [];
+        snapshot.forEach(doc => data.push(doc.data()));
+        
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `pds_export_${currentUser.uid}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+      });
+    }
 
-  document.getElementById('tierDate').value = new Date().toISOString().split('T')[0];
+    // 8. 계정 삭제
+    function deleteUserAccount() {
+      if(!currentUser) return;
+      if(!confirm('정말로 계정과 모든 데이터를 삭제하시겠습니까?')) return;
 
-  await initSeedData();
-  await loadAllData();
-</script>
-
+      const uid = currentUser.uid;
+      // DB 삭제 후 계정 삭제
+      db.collection('users').doc(uid).collection('pds').get().then(snapshot => {
+        const batch = db.batch();
+        snapshot.forEach(doc => batch.delete(doc.ref));
+        return batch.commit();
+      }).then(() => {
+        return currentUser.delete();
+      }).then(() => {
+        alert('계정이 완전히 삭제되었습니다.');
+      }).catch(err => alert('삭제 실패: ' + err.message));
+    }
+  </script>
 </body>
 </html>

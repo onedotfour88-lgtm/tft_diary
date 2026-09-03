@@ -17,11 +17,19 @@
       --danger: #ef4444;
       --success: #10b981;
     }
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 24px 20px; line-height: 1.5; }
-    .container { max-width: 960px; margin: 0 auto; }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-y: auto !important; /* 스크롤 강제 활성화 */
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 24px 20px 100px 20px; }
     
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-    .header-title { font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 10px; margin: 0; }
+    .header-title { font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 10px; margin: 0; color: #fff; }
     .header-user { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--sub); }
     
     .nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
@@ -111,7 +119,6 @@
       <div class="header-user">
         <span id="userEmailSpan">user@example.com</span>
         <button id="changeNickBtn" class="btn-sub">닉네임 변경</button>
-        <button id="exportBtn" class="btn-sub">💾 데이터 내보내기</button>
         <button id="logoutBtn" class="btn-danger">로그아웃</button>
       </div>
     </div>
@@ -157,7 +164,7 @@
               <input type="number" id="planEstHours" value="100" required>
             </div>
           </div>
-          <button type="submit" class="btn-main">계획 저장 / 수정하기</button>
+          <button type="submit" class="btn-main">💾 계획 저장 / 수정하기</button>
         </form>
       </div>
 
@@ -167,16 +174,15 @@
       </div>
 
       <div class="card">
-        <h2>📜 저장된 이전 계획 이력 열람 목록</h2>
+        <h2>📜 저장된 이전 계획 이력 목록</h2>
         <div id="planHistoryList">이력이 없습니다.</div>
       </div>
     </div>
 
     <!-- 2. 할 일 (Do) -->
     <div id="todoTab" class="tab-content">
-      <!-- 복구된 할 일 입력 Form -->
       <div class="card">
-        <h2>➕ 할 일 추가</h2>
+        <h2>➕ 5일간 기록 관찰 할 일 추가 (작성/저장)</h2>
         <form id="addTodoForm">
           <div class="grid">
             <div style="grid-column: span 2;">
@@ -206,34 +212,12 @@
               <input type="number" id="todoEstHours" value="1" min="0.5" step="0.5" required>
             </div>
           </div>
-          <button type="submit" class="btn-main">할 일 등록</button>
+          <button type="submit" class="btn-main">➕ 할 일 추가 및 저장</button>
         </form>
       </div>
 
       <div class="card">
-        <h2>🔍 검색 / 거르기 / 정렬</h2>
-        <div class="grid">
-          <div>
-            <label>검색어</label>
-            <input type="text" id="todoSearch" placeholder="제목 또는 태그 검색">
-          </div>
-          <div>
-            <label>상태 필터</label>
-            <select id="todoFilterStatus">
-              <option value="ALL">전체 보기</option>
-              <option value="DOING">진행 중</option>
-              <option value="DONE">완료</option>
-            </select>
-          </div>
-          <div>
-            <label>정렬 기준</label>
-            <select id="todoSort">
-              <option value="DATE_ASC">마감일 오름차순 (빠른순)</option>
-              <option value="DATE_DESC">마감일 내림차순</option>
-            </select>
-          </div>
-        </div>
-
+        <h2>📋 할 일 목록 및 수정/삭제</h2>
         <table>
           <thead>
             <tr>
@@ -244,11 +228,11 @@
               <th>태그</th>
               <th>예상시간</th>
               <th>실제시간</th>
-              <th>관리</th>
+              <th>관리 (편집/삭제)</th>
             </tr>
           </thead>
           <tbody id="todoTableBody">
-            <tr><td colspan="8" style="color:var(--sub);">등록된 할 일이 없습니다.</td></tr>
+            <tr><td colspan="8" style="color:var(--sub);">등록된 할 일이 없습니다. 위 폼에서 작성해 주세요.</td></tr>
           </tbody>
         </table>
       </div>
@@ -256,9 +240,8 @@
 
     <!-- 3. 티어 그래프 (Tier) -->
     <div id="tierTab" class="tab-content">
-      <!-- 복구된 티어 입력 Form -->
       <div class="card">
-        <h2>📈 티어 LP 기록 입력</h2>
+        <h2>📈 티어 LP 기록 입력 (작성/저장)</h2>
         <form id="tierRecordForm">
           <div class="grid">
             <div>
@@ -292,12 +275,12 @@
               <input type="number" id="tierLp" min="0" max="99" value="0" required>
             </div>
           </div>
-          <button type="submit" class="btn-main">티어 기록 저장</button>
+          <button type="submit" class="btn-main">💾 티어 점수 기록 저장</button>
         </form>
       </div>
 
       <div class="card">
-        <h2>📊 티어 변동 그래프 열람</h2>
+        <h2>📊 티어 변동 그래프</h2>
         <div style="background:var(--input-bg); padding:16px; border-radius:8px; border: 1px solid var(--border);">
           <canvas id="tierChart" height="200"></canvas>
         </div>
@@ -326,19 +309,15 @@
             <div class="stat-num" id="statDoing" style="color:var(--accent);">0</div>
           </div>
         </div>
-        <div class="stat-card" style="margin-top:12px;">
-          <div class="stat-title">총 예상 시간 / 실제 시간 합계</div>
-          <div class="stat-num" id="statTimeSummary" style="font-size:1.3rem;">0h / 0h</div>
-        </div>
       </div>
 
       <div class="card">
-        <h2>💡 다음 계획으로 넘길 피드백 한 줄</h2>
+        <h2>💡 피드백 기록 및 저장</h2>
         <form id="nextActionForm">
           <div style="margin-bottom:12px;">
             <input type="text" id="nextActionInput" placeholder="예: 8레벨 리롤 타이밍에 돈 30원 미만으로 떨어뜨리지 않기" required>
           </div>
-          <button type="submit" class="btn-main">피드백 저장하기</button>
+          <button type="submit" class="btn-main">💾 피드백 저장하기</button>
         </form>
         <div id="savedFeedbackDisplay" style="margin-top: 12px; font-size: 0.9rem; color: var(--sub);"></div>
       </div>
@@ -445,7 +424,6 @@
 
     document.getElementById('logoutBtn')?.addEventListener('click', () => signOut(auth).then(() => location.reload()));
 
-    // 닉네임 변경
     document.getElementById('changeNickBtn')?.addEventListener('click', async () => {
       const newNick = prompt("새로운 소환사 닉네임을 입력하세요:", currentNickname);
       if(newNick && newNick.trim() !== "") {
@@ -456,7 +434,6 @@
       }
     });
 
-    // 계획 저장
     document.getElementById('planForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const planData = {
@@ -470,12 +447,11 @@
       try {
         await setDoc(getUserRef("pds_plans", "main_plan"), planData);
         await addDoc(getUserRef("pds_plan_history"), { ...planData, savedAt: new Date().toLocaleString() });
-        alert("계획이 성공적으로 저장되었습니다!");
+        alert("계획이 저장되었습니다!");
         loadPlanData();
       } catch(err) { alert("저장 실패: " + err.message); }
     });
 
-    // 할 일 추가
     document.getElementById('addTodoForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const newTodo = {
@@ -491,11 +467,11 @@
       try {
         await addDoc(getUserRef("pds_todos"), newTodo);
         document.getElementById('todoTitle').value = "";
+        alert("할 일이 추가되었습니다!");
         loadTodoData();
       } catch(err) { alert("등록 실패: " + err.message); }
     });
 
-    // 티어 기록 추가
     document.getElementById('tierRecordForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const tierMap = { "아이언":0, "브론즈":400, "실버":800, "골드":1200, "플래티넘":1600, "에메랄드":2000, "다이아":2400, "마스터":2800 };
@@ -514,12 +490,11 @@
 
       try {
         await addDoc(getUserRef("pds_tier_records"), record);
-        alert("티어 기록이 추가되었습니다.");
+        alert("티어 기록이 저장되었습니다.");
         loadTierData();
       } catch(err) { alert("저장 실패: " + err.message); }
     });
 
-    // 피드백 전송
     document.getElementById('nextActionForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const text = document.getElementById('nextActionInput').value;
@@ -530,7 +505,6 @@
       } catch(err) { alert("저장 실패: " + err.message); }
     });
 
-    // 계정 삭제
     document.getElementById('deleteAccBtn')?.addEventListener('click', async () => {
       if(!confirm('모든 데이터가 삭제되며 복구 불가능합니다. 정말 삭제하시겠습니까?')) return;
       try {
@@ -596,8 +570,6 @@
     todos = [];
     let html = "";
     let doneCount = 0;
-    let totalEst = 0;
-    let totalAct = 0;
 
     snap.forEach(d => {
       const id = d.id;
@@ -605,8 +577,6 @@
       todos.push({ id, ...t });
       
       if(t.status === 'DONE') doneCount++;
-      totalEst += Number(t.estHours || 0);
-      totalAct += Number(t.actualHours || 0);
 
       html += `
         <tr>
@@ -625,11 +595,10 @@
       `;
     });
 
-    document.getElementById('todoTableBody').innerHTML = html || '<tr><td colspan="8" style="color:var(--sub);">등록된 할 일이 없습니다.</td></tr>';
+    document.getElementById('todoTableBody').innerHTML = html || '<tr><td colspan="8" style="color:var(--sub);">등록된 할 일이 없습니다. 위 폼에서 작성해 주세요.</td></tr>';
     document.getElementById('statTotal').textContent = todos.length;
     document.getElementById('statDone').textContent = doneCount;
     document.getElementById('statDoing').textContent = todos.length - doneCount;
-    document.getElementById('statTimeSummary').textContent = `${totalEst}h / ${totalAct}h`;
   }
 
   async function loadTierData() {
@@ -661,7 +630,6 @@
     });
   }
 
-  // 전역 등록 (HTML 버튼에서 호출용)
   window.toggleTodoStatus = async (id, currentStatus) => {
     const nextStatus = currentStatus === 'DONE' ? 'DOING' : 'DONE';
     await updateDoc(getUserRef("pds_todos", id), { status: nextStatus });

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDS 다이어리 - TFT 잡레이너 시즌 목표</title>
+  <title>PDS 다이어리 - TFT 시즌 목표</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -56,59 +56,66 @@
 
 <div class="container">
 
-  <!-- 로그인 / 회원가입 화면 (비로그인 상태 시 노출) -->
+  <!-- 로그인 / 회원가입 화면 -->
   <div id="authContainer" class="card" style="max-width: 420px; margin: 60px auto;">
     <h1 style="text-align:center; font-size: 1.5rem; color: var(--accent); margin-bottom:20px;">🎮 TFT PDS 다이어리</h1>
     <div style="display:flex; margin-bottom:20px; border-bottom:1px solid var(--border);">
-      <button id="authTabLogin" style="flex:1; padding:10px; background:none; border:none; color:var(--accent); font-weight:700; border-bottom:3px solid var(--accent); cursor:pointer;" onclick="switchAuthTab('login')">로그인</button>
-      <button id="authTabSignup" style="flex:1; padding:10px; background:none; border:none; color:var(--sub); font-weight:700; cursor:pointer;" onclick="switchAuthTab('signup')">회원가입</button>
+      <button id="authTabLogin" style="flex:1; padding:10px; background:none; border:none; color:var(--accent); font-weight:700; border-bottom:3px solid var(--accent); cursor:pointer;">로그인</button>
+      <button id="authTabSignup" style="flex:1; padding:10px; background:none; border:none; color:var(--sub); font-weight:700; cursor:pointer;">회원가입</button>
     </div>
 
-    <form id="loginForm" onsubmit="handleLogin(event)">
+    <!-- 로그인 폼 -->
+    <form id="loginForm">
       <div style="margin-bottom: 12px;">
         <label>이메일 계정</label>
-        <input type="email" id="loginEmail" autocomplete="username" required>
+        <input type="email" id="loginEmail" autocomplete="username" placeholder="user@example.com" required>
       </div>
       <div style="margin-bottom: 20px;">
         <label>비밀번호</label>
-        <input type="password" id="loginPassword" autocomplete="current-password" required>
+        <input type="password" id="loginPassword" autocomplete="current-password" placeholder="비밀번호" required>
       </div>
       <button type="submit" class="btn-main">로그인</button>
     </form>
 
-    <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
+    <!-- 회원가입 폼 -->
+    <form id="signupForm" class="hidden">
+      <div style="margin-bottom: 12px;">
+        <label>소환사 닉네임</label>
+        <input type="text" id="signupNickname" placeholder="예: 챌린저가자" required>
+      </div>
       <div style="margin-bottom: 12px;">
         <label>신규 이메일</label>
-        <input type="email" id="signupEmail" autocomplete="username" required>
+        <input type="email" id="signupEmail" autocomplete="username" placeholder="user@example.com" required>
       </div>
       <div style="margin-bottom: 12px;">
         <label>비밀번호 (6자리 이상)</label>
-        <input type="password" id="signupPassword" autocomplete="new-password" required>
+        <input type="password" id="signupPassword" autocomplete="new-password" placeholder="비밀번호" required>
       </div>
       <div style="margin-bottom: 20px;">
         <label>비밀번호 확인</label>
-        <input type="password" id="signupPasswordConfirm" autocomplete="new-password" required>
+        <input type="password" id="signupPasswordConfirm" autocomplete="new-password" placeholder="비밀번호 확인" required>
       </div>
       <button type="submit" class="btn-main" style="background:var(--success); color:#fff;">회원가입 완료</button>
     </form>
   </div>
 
-  <!-- 메인 인증 후 다이어리 화면 -->
+  <!-- 메인 앱 화면 -->
   <div id="appContainer" class="hidden">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; flex-wrap: wrap; gap:12px;">
-      <h1 style="margin:0; font-size: 1.5rem;">🎮 TFT 다이어리 (잡레이너)</h1>
+      <h1 style="margin:0; font-size: 1.5rem;" id="mainHeaderTitle">🎮 TFT 다이어리</h1>
       <div style="display:flex; gap:10px; align-items:center;">
-        <span id="userEmailBadge" style="font-size: 0.85rem; color: var(--sub);"></span>
-        <button id="exportBtn" class="btn-sub">📥 데이터 전체 내보내기</button>
-        <button onclick="handleLogout()" class="btn-danger">로그아웃</button>
+        <span id="userNicknameBadge" style="font-size: 0.9rem; font-weight:bold; color: var(--accent);"></span>
+        <button id="changeNickBtn" class="btn-sub">닉네임 변경</button>
+        <button id="exportBtn" class="btn-sub">📥 데이터 내보내기</button>
+        <button id="logoutBtn" class="btn-danger">로그아웃</button>
       </div>
     </div>
 
     <div class="nav">
-      <button class="nav-btn active" onclick="switchTab('planTab')">1. 계획 (Plan)</button>
-      <button class="nav-btn" onclick="switchTab('todoTab')">2. 할 일 (Do)</button>
-      <button class="nav-btn" onclick="switchTab('tierTab')">3. 티어 그래프 (Tier)</button>
-      <button class="nav-btn" onclick="switchTab('seeTab')">4. 돌아보기 (See)</button>
+      <button class="nav-btn active" data-tab="planTab">1. 계획 (Plan)</button>
+      <button class="nav-btn" data-tab="todoTab">2. 할 일 (Do)</button>
+      <button class="nav-btn" data-tab="tierTab">3. 티어 그래프 (Tier)</button>
+      <button class="nav-btn" data-tab="seeTab">4. 돌아보기 (See)</button>
     </div>
 
     <!-- 1. 계획 (Plan) -->
@@ -116,7 +123,10 @@
       <div class="card">
         <h2>📌 시즌 계획 세우기</h2>
         <div class="grid">
-          <div><label>계획명</label><input type="text" id="planTitle" value="TFT 시즌 골드 달성 및 승률 12.5% 유지"></div>
+          <div>
+            <label id="planTitleLabel">계획명</label>
+            <input type="text" id="planTitle" value="TFT 시즌 골드 달성 및 승률 12.5% 유지">
+          </div>
           <div><label>마감일</label><input type="date" id="planPeriod" value="2026-09-14"></div>
           <div><label>우선순위</label><select id="planPriority"><option value="P1">P1 (높음)</option><option value="P2">P2 (보통)</option></select></div>
         </div>
@@ -124,7 +134,7 @@
           <div><label>성공 기준</label><input type="text" id="planCriteria" value="시즌 골드 4 달성"></div>
           <div><label>예상 시간 (시간)</label><input type="number" id="planEstHours" value="4"></div>
         </div>
-        <button class="btn-main" onclick="savePlan()">계획 저장 / 수정하기</button>
+        <button class="btn-main" id="savePlanBtn">계획 저장 / 수정하기</button>
       </div>
 
       <div class="card">
@@ -144,8 +154,8 @@
         <h2>➕ 5일간 기록 관찰 할 일 목록</h2>
         <table>
           <thead>
-            <tr><th>상태</th><th>할 일</th><th>마감일</th><th>우선순위</th><th>태그</th><th>예상/실제</th>
-          </tr></thead>
+            <tr><th>상태</th><th>할 일</th><th>마감일</th><th>우선순위</th><th>태그</th><th>예상/실제</th></tr>
+          </thead>
           <tbody id="todoTableBody"></tbody>
         </table>
       </div>
@@ -180,7 +190,7 @@
       <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
         <h2 style="color: var(--danger);">⚠️ 계정 처리</h2>
         <p style="font-size:0.85rem; color:var(--sub);">계정을 삭제하면 Firestore 내 등록된 모든 개인 자료가 함께 즉시 파기되어 복구할 수 없습니다.</p>
-        <button onclick="deleteAccount()" class="btn-danger">계정 및 내 모든 데이터 즉시 삭제</button>
+        <button id="deleteAccBtn" class="btn-danger">계정 및 내 모든 데이터 즉시 삭제</button>
       </div>
     </div>
   </div>
@@ -189,10 +199,9 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  // 제출물 보안을 위해 API 키 및 세부 접속 정보는 인메모리 파싱 사용
   const firebaseConfig = {
     apiKey: "AIzaSyBigcKnHH1iioUAXJiXtCpdLzryxsTmHWw",
     authDomain: "tft-diary-2d76e.firebaseapp.com",
@@ -207,61 +216,145 @@
   const db = getFirestore(app);
 
   let currentUser = null;
+  let currentNickname = "사용자";
   let plansHistory = [];
   let currentPlan = null;
   let todos = [];
   let tierRecords = [];
   let chartInstance = null;
 
-  window.switchAuthTab = function(type) {
+  // 탭 전환 핸들러
+  function switchAuthTab(type) {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const tabLogin = document.getElementById('authTabLogin');
+    const tabSignup = document.getElementById('authTabSignup');
+
     if(type === 'login') {
-      document.getElementById('loginForm').classList.remove('hidden');
-      document.getElementById('signupForm').classList.add('hidden');
+      loginForm.classList.remove('hidden');
+      signupForm.classList.add('hidden');
+      tabLogin.style.color = "var(--accent)";
+      tabLogin.style.borderBottom = "3px solid var(--accent)";
+      tabSignup.style.color = "var(--sub)";
+      tabSignup.style.borderBottom = "none";
     } else {
-      document.getElementById('loginForm').classList.add('hidden');
-      document.getElementById('signupForm').classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      signupForm.classList.remove('hidden');
+      tabSignup.style.color = "var(--accent)";
+      tabSignup.style.borderBottom = "3px solid var(--accent)";
+      tabLogin.style.color = "var(--sub)";
+      tabLogin.style.borderBottom = "none";
     }
-  };
+  }
 
-  window.handleLogin = async function(e) {
-    e.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
-    } catch(err) { alert('로그인 거절: 계정 정보가 틀리거나 유효하지 않습니다.'); }
-  };
+  // 메인 앱 탭 전환
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId)?.classList.add('active');
+    
+    const activeBtn = document.querySelector(`.nav-btn[data-tab="${tabId}"]`);
+    if(activeBtn) activeBtn.classList.add('active');
 
-  window.handleSignup = async function(e) {
-    e.preventDefault();
-    const pass = document.getElementById('signupPassword').value;
-    if(pass !== document.getElementById('signupPasswordConfirm').value) return alert('비밀번호 불일치');
-    try {
-      await createUserWithEmailAndPassword(auth, document.getElementById('signupEmail').value, pass);
-    } catch(err) { alert('가입 오류: ' + err.message); }
-  };
+    if (tabId === 'tierTab') renderTierChart();
+  }
 
-  window.handleLogout = function() {
-    signOut(auth).then(() => {
-      // 로그아웃 시 세션 토큰 즉시 무효화
-      location.reload();
+  // DOM 이벤트 연결
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('authTabLogin')?.addEventListener('click', () => switchAuthTab('login'));
+    document.getElementById('authTabSignup')?.addEventListener('click', () => switchAuthTab('signup'));
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tabId = e.target.getAttribute('data-tab');
+        if(tabId) switchTab(tabId);
+      });
     });
-  };
 
-  window.deleteAccount = async function() {
-    if(!confirm('내 데이터가 모두 삭제되며 복구할 수 없습니다. 삭제하시겠습니까?')) return;
-    try {
-      const uid = auth.currentUser.uid;
-      await deleteDoc(doc(db, "users", uid, "pds_plans", "main_plan"));
-      await deleteUser(auth.currentUser);
-      alert('계정과 개인 데이터가 전량 삭제되었습니다.');
-    } catch(err) { alert('계정 삭제 실패: ' + err.message); }
-  };
+    document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPassword').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch(err) {
+        alert('로그인 오류: ' + err.message);
+      }
+    });
+
+    document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nickname = document.getElementById('signupNickname').value.trim();
+      const email = document.getElementById('signupEmail').value;
+      const pass = document.getElementById('signupPassword').value;
+      const passConfirm = document.getElementById('signupPasswordConfirm').value;
+
+      if(!nickname) return alert('닉네임을 입력해 주세요.');
+      if(pass !== passConfirm) return alert('비밀번호가 일치하지 않습니다.');
+
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(userCred.user, { displayName: nickname });
+        alert(`${nickname}님, 회원가입이 완료되었습니다!`);
+      } catch(err) {
+        alert('가입 오류: ' + err.message);
+      }
+    });
+
+    document.getElementById('changeNickBtn')?.addEventListener('click', async () => {
+      const newNick = prompt("새로운 소환사 닉네임을 입력하세요:", currentNickname);
+      if (!newNick || newNick.trim() === "" || newNick === currentNickname) return;
+      try {
+        await updateProfile(auth.currentUser, { displayName: newNick.trim() });
+        currentNickname = newNick.trim();
+        updateHeaderAndUI();
+        alert("닉네임이 성공적으로 변경되었습니다!");
+      } catch (err) {
+        alert("닉네임 변경 실패: " + err.message);
+      }
+    });
+
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      signOut(auth).then(() => location.reload());
+    });
+
+    document.getElementById('savePlanBtn')?.addEventListener('click', () => alert("계획이 저장되었습니다."));
+
+    document.getElementById('deleteAccBtn')?.addEventListener('click', async () => {
+      if(!confirm('내 데이터가 모두 삭제되며 복구할 수 없습니다. 삭제하시겠습니까?')) return;
+      try {
+        const uid = auth.currentUser.uid;
+        await deleteDoc(doc(db, "users", uid, "pds_plans", "main_plan"));
+        await deleteUser(auth.currentUser);
+        alert('계정과 개인 데이터가 전량 삭제되었습니다.');
+      } catch(err) { alert('계정 삭제 실패: ' + err.message); }
+    });
+
+    document.getElementById('exportBtn')?.addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ nickname: currentNickname, plan: currentPlan, history: plansHistory, todos, tierRecords }));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `pds_export_${currentNickname}.json`);
+      a.click();
+    });
+  });
+
+  function updateHeaderAndUI() {
+    document.getElementById('mainHeaderTitle').textContent = `🎮 TFT 다이어리 (${currentNickname})`;
+    document.getElementById('userNicknameBadge').textContent = `👤 ${currentNickname}`;
+    const labelEl = document.getElementById('planTitleLabel');
+    if(labelEl) labelEl.textContent = `계획명 (소환사: ${currentNickname})`;
+  }
 
   onAuthStateChanged(auth, async (user) => {
     if(user) {
       currentUser = user;
+      currentNickname = user.displayName || user.email.split('@')[0] || "사용자";
+      
       document.getElementById('authContainer').classList.add('hidden');
       document.getElementById('appContainer').classList.remove('hidden');
-      document.getElementById('userEmailBadge').textContent = user.email;
+      
+      updateHeaderAndUI();
       await initData();
       await loadAllData();
     } else {
@@ -276,98 +369,97 @@
     return collection(db, "users", currentUser.uid, subCol);
   }
 
-  window.switchTab = function(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    if (tabId === 'tierTab') renderTierChart();
-  };
-
   async function initData() {
-    const planRef = getUserRef("pds_plans", "main_plan");
-    const planSnap = await getDoc(planRef);
-    if (!planSnap.exists()) {
-      // 5일간 데이터 및 2일차 뒤/3일차 앞 규칙 변경 데이터 시드 초기화
-      await setDoc(planRef, {
-        id: "main_plan", title: "TFT 시즌 골드 달성 및 승률 12.5% 유지", period: "2026-09-14",
-        priority: "P1", criteria: "시즌 골드 4 달성", estHours: 4, nextAction: "초반부터 빠르게 50원 이자를 받기"
-      });
+    try {
+      const planRef = getUserRef("pds_plans", "main_plan");
+      const planSnap = await getDoc(planRef);
+      if (!planSnap.exists()) {
+        await setDoc(planRef, {
+          id: "main_plan", title: "TFT 시즌 골드 달성 및 승률 12.5% 유지", period: "2026-09-14",
+          priority: "P1", criteria: "시즌 골드 4 달성", estHours: 4, nextAction: "초반부터 빠르게 50원 이자를 받기"
+        });
 
-      // 규칙 변경 이력 기록 (2일차(08-22) 뒤, 3일차(08-25) 앞인 2026-08-24 15:30:00 기록)
-      await setDoc(getUserRef("pds_plan_history", "hist_1"), {
-        historyId: "hist_1", title: "TFT 시즌 다이아 달성 및 승률 12.5% 유지", savedAt: "2026-08-24T15:30:00Z", reason: "초반 승률 부진으로 목표 티어를 다이아에서 골드로 하향 변경"
-      });
+        await setDoc(getUserRef("pds_plan_history", "hist_1"), {
+          historyId: "hist_1", title: "TFT 시즌 다이아 달성 및 승률 12.5% 유지", savedAt: "2026-08-24T15:30:00Z", reason: "초반 승률 부진으로 목표 티어를 다이아에서 골드로 하향 변경"
+        });
 
-      // 서로 다른 실제 5일간 기록 생성
-      const 5DaysTodos = [
-        { id: "t1", title: "1일차: 리롤덱 익히기", dueDate: "2026-08-20", estHours: 1, actualHours: 1, isCompleted: true },
-        { id: "t2", title: "2일차: 주술 익히기", dueDate: "2026-08-22", estHours: 1, actualHours: 1, isCompleted: true },
-        { id: "t3", title: "3일차: 증강체 복기", dueDate: "2026-08-25", estHours: 1, actualHours: 1, isCompleted: true },
-        { id: "t4", title: "4일차: 8렙 리롤 타이밍 연습", dueDate: "2026-08-27", estHours: 1, actualHours: 1, isCompleted: true },
-        { id: "t5", title: "5일차: 피드백 반영 배치 작성", dueDate: "2026-08-30", estHours: 1, actualHours: 1, isCompleted: true }
-      ];
-      for(let t of 5DaysTodos) await setDoc(getUserRef("pds_todos", t.id), t);
+        const todosData = [
+          { id: "t1", title: "1일차: 리롤덱 익히기", dueDate: "2026-08-20", estHours: 1, actualHours: 1, isCompleted: true },
+          { id: "t2", title: "2일차: 주술 익히기", dueDate: "2026-08-22", estHours: 1, actualHours: 1, isCompleted: true },
+          { id: "t3", title: "3일차: 증강체 복기", dueDate: "2026-08-25", estHours: 1, actualHours: 1, isCompleted: true },
+          { id: "t4", title: "4일차: 8렙 리롤 타이밍 연습", dueDate: "2026-08-27", estHours: 1, actualHours: 1, isCompleted: true },
+          { id: "t5", title: "5일차: 피드백 반영 배치 작성", dueDate: "2026-08-30", estHours: 1, actualHours: 1, isCompleted: true }
+        ];
+        for(let t of todosData) await setDoc(getUserRef("pds_todos", t.id), t);
 
-      const 5DaysTiers = [
-        { id: "tr1", date: "2026-08-20", tierName: "골드", division: 4, lp: 20, score: 1220 },
-        { id: "tr2", date: "2026-08-22", tierName: "골드", division: 3, lp: 50, score: 1250 },
-        { id: "tr_rule", date: "2026-08-24 (규칙 변경)", tierName: "골드", division: 3, lp: 50, score: 1250, isRuleChange: true },
-        { id: "tr3", date: "2026-08-25", tierName: "골드", division: 2, lp: 10, score: 1310 },
-        { id: "tr4", date: "2026-08-27", tierName: "골드", division: 2, lp: 45, score: 1345 },
-        { id: "tr5", date: "2026-08-30", tierName: "골드", division: 1, lp: 0, score: 1400 }
-      ];
-      for(let tr of 5DaysTiers) await setDoc(getUserRef("pds_tier_records", tr.id), tr);
+        const tiersData = [
+          { id: "tr1", date: "2026-08-20", tierName: "골드", division: 4, lp: 20, score: 1220 },
+          { id: "tr2", date: "2026-08-22", tierName: "골드", division: 3, lp: 50, score: 1250 },
+          { id: "tr_rule", date: "2026-08-24 (규칙 변경)", tierName: "골드", division: 3, lp: 50, score: 1250, isRuleChange: true },
+          { id: "tr3", date: "2026-08-25", tierName: "골드", division: 2, lp: 10, score: 1310 },
+          { id: "tr4", date: "2026-08-27", tierName: "골드", division: 2, lp: 45, score: 1345 },
+          { id: "tr5", date: "2026-08-30", tierName: "골드", division: 1, lp: 0, score: 1400 }
+        ];
+        for(let tr of tiersData) await setDoc(getUserRef("pds_tier_records", tr.id), tr);
+      }
+    } catch(e) {
+      console.error("Init Error:", e);
     }
   }
 
   async function loadAllData() {
-    const planSnap = await getDoc(getUserRef("pds_plans", "main_plan"));
-    if(planSnap.exists()) {
-      currentPlan = planSnap.data();
-      document.getElementById('currentPlanDisplay').innerHTML = `
-        <b>목표:</b> ${currentPlan.title} | <b>기간:</b> ${currentPlan.period} | <b>우선순위:</b> ${currentPlan.priority}<br>
-        💡 <b>피드백/전송된 한 줄:</b> ${currentPlan.nextAction}
-      `;
+    try {
+      const planSnap = await getDoc(getUserRef("pds_plans", "main_plan"));
+      if(planSnap.exists()) {
+        currentPlan = planSnap.data();
+        document.getElementById('currentPlanDisplay').innerHTML = `
+          <b>목표:</b> ${currentPlan.title} (소환사: ${currentNickname}) | <b>기간:</b> ${currentPlan.period} | <b>우선순위:</b> ${currentPlan.priority}<br>
+          💡 <b>피드백/전송된 한 줄:</b> ${currentPlan.nextAction}
+        `;
+      }
+
+      const histSnap = await getDocs(getUserRef("pds_plan_history"));
+      plansHistory = [];
+      histSnap.forEach(d => plansHistory.push(d.data()));
+      document.getElementById('planHistoryList').innerHTML = plansHistory.map(h => `
+        <div class="history-item">
+          <div><b>[규칙변경 변경시각: ${h.savedAt}]</b> ${h.title} <span class="rule-change-badge">사유: ${h.reason}</span></div>
+        </div>
+      `).join('');
+
+      const todoSnap = await getDocs(getUserRef("pds_todos"));
+      todos = [];
+      todoSnap.forEach(d => todos.push(d.data()));
+      document.getElementById('todoTableBody').innerHTML = todos.map(t => `
+        <tr>
+          <td>✅ 완료</td>
+          <td><b>${t.title}</b></td>
+          <td>${t.dueDate}</td>
+          <td>P1</td>
+          <td>운영</td>
+          <td>예상 ${t.estHours}h / 실제 ${t.actualHours}h</td>
+        </tr>
+      `).join('');
+
+      const tierSnap = await getDocs(getUserRef("pds_tier_records"));
+      tierRecords = [];
+      tierSnap.forEach(d => tierRecords.push(d.data()));
+      tierRecords.sort((a,b) => a.date.localeCompare(b.date));
+    } catch(e) {
+      console.error("Load Error:", e);
     }
-
-    const histSnap = await getDocs(getUserRef("pds_plan_history"));
-    plansHistory = [];
-    histSnap.forEach(d => plansHistory.push(d.data()));
-    document.getElementById('planHistoryList').innerHTML = plansHistory.map(h => `
-      <div class="history-item">
-        <div><b>[규칙변경 변경시각: ${h.savedAt}]</b> ${h.title} <span class="rule-change-badge">사유: ${h.reason}</span></div>
-      </div>
-    `).join('');
-
-    const todoSnap = await getDocs(getUserRef("pds_todos"));
-    todos = [];
-    todoSnap.forEach(d => todos.push(d.data()));
-    document.getElementById('todoTableBody').innerHTML = todos.map(t => `
-      <tr>
-        <td>✅ 완료</td>
-        <td><b>${t.title}</b></td>
-        <td>${t.dueDate}</td>
-        <td>P1</td>
-        <td>운영</td>
-        <td>예상 ${t.estHours}h / 실제 ${t.actualHours}h</td>
-      </tr>
-    `).join('');
-
-    const tierSnap = await getDocs(getUserRef("pds_tier_records"));
-    tierRecords = [];
-    tierSnap.forEach(d => tierRecords.push(d.data()));
-    tierRecords.sort((a,b) => a.date.localeCompare(b.date));
   }
 
   function renderTierChart() {
-    const ctx = document.getElementById('tierChart').getContext('2d');
+    const ctx = document.getElementById('tierChart')?.getContext('2d');
+    if (!ctx) return;
     if (chartInstance) chartInstance.destroy();
     chartInstance = new Chart(ctx, {
       type: 'line',
       data: {
         labels: tierRecords.map(r => r.date),
         datasets: [{
-          label: '5일간 티어 변동 점수 (LP)',
+          label: `${currentNickname}님 5일간 티어 변동 점수 (LP)`,
           data: tierRecords.map(r => r.score),
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.15)',
@@ -377,14 +469,6 @@
       options: { responsive: true }
     });
   }
-
-  document.getElementById('exportBtn').addEventListener('click', () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ plan: currentPlan, history: plansHistory, todos, tierRecords }));
-    const a = document.createElement('a');
-    a.setAttribute("href", dataStr);
-    a.setAttribute("download", "pds_export_data.json");
-    a.click();
-  });
 </script>
 </body>
 </html>

@@ -22,7 +22,7 @@
     
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
     .header-title { font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 10px; margin: 0; }
-    .header-user { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; color: var(--sub); }
+    .header-user { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--sub); }
     
     .nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
     .nav button { background: none; border: none; color: var(--sub); font-size: 1rem; font-weight: 700; padding: 10px 20px; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
@@ -40,7 +40,7 @@
     button.btn-main { background: var(--accent); color: #000; font-weight: 700; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 0.95rem; }
     button.btn-main:hover { opacity: 0.9; }
     button.btn-sub { background: #1e293b; color: #fff; font-weight: 600; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
-    button.btn-danger { background: var(--danger); color: #fff; font-weight: 600; padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; }
+    button.btn-danger { background: var(--danger); color: #fff; font-weight: 600; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; }
     
     table { width: 100%; border-collapse: collapse; margin-top: 12px; }
     th, td { border: 1px solid var(--border); padding: 12px; text-align: center; font-size: 0.85rem; }
@@ -51,7 +51,7 @@
     .stat-title { color: var(--sub); font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
     .stat-num { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
     
-    .history-item { background: var(--input-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
+    .history-item { background: var(--input-bg); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     .hidden { display: none !important; }
@@ -107,9 +107,10 @@
     
     <!-- 상단 헤더 -->
     <div class="header">
-      <h1 class="header-title" id="mainHeaderTitle">🎮 TFT 다이어리 (잡레이너)</h1>
+      <h1 class="header-title" id="mainHeaderTitle">🎮 TFT 다이어리</h1>
       <div class="header-user">
-        <span id="userEmailSpan">onedotfour88@gmail.com</span>
+        <span id="userEmailSpan">user@example.com</span>
+        <button id="changeNickBtn" class="btn-sub">닉네임 변경</button>
         <button id="exportBtn" class="btn-sub">💾 데이터 내보내기</button>
         <button id="logoutBtn" class="btn-danger">로그아웃</button>
       </div>
@@ -126,30 +127,34 @@
     <!-- 1. 계획 (Plan) -->
     <div id="planTab" class="tab-content active">
       <div class="card">
-        <h2>📌 시즌 계획 세우기</h2>
+        <h2>📌 시즌 계획 세우기 / 수정</h2>
         <form id="planForm">
           <div class="grid">
             <div style="grid-column: span 2;">
-              <label id="planTitleLabel">계획명 (소환사: 잡레이너)</label>
-              <input type="text" id="planTitle" value="TFT 시즌 다이아 달성 및 승률 12.5% 유지" required>
+              <label id="planTitleLabel">계획명</label>
+              <input type="text" id="planTitle" placeholder="예: TFT 시즌 다이아 달성 및 승률 12.5% 유지" required>
             </div>
             <div>
               <label>기간 (마감일)</label>
-              <input type="date" id="planPeriod" value="2026-10-31" required>
+              <input type="date" id="planPeriod" required>
             </div>
             <div>
               <label>우선순위</label>
-              <select id="planPriority"><option value="P1 (높음)">P1 (높음)</option><option value="P2 (보통)">P2 (보통)</option></select>
+              <select id="planPriority">
+                <option value="P1 (높음)">P1 (높음)</option>
+                <option value="P2 (보통)">P2 (보통)</option>
+                <option value="P3 (낮음)">P3 (낮음)</option>
+              </select>
             </div>
           </div>
           <div class="grid">
             <div style="grid-column: span 2;">
               <label>성공 기준</label>
-              <input type="text" id="planCriteria" value="티어 다이아4 이상 / TOP4 비율 55% 이상" required>
+              <input type="text" id="planCriteria" placeholder="예: 티어 다이아4 이상 / TOP4 비율 55% 이상" required>
             </div>
             <div style="grid-column: span 2;">
               <label>예상 시간 (시간 단위)</label>
-              <input type="number" id="planEstHours" value="150" required>
+              <input type="number" id="planEstHours" value="100" required>
             </div>
           </div>
           <button type="submit" class="btn-main">계획 저장 / 수정하기</button>
@@ -158,7 +163,7 @@
 
       <div class="card">
         <h2>📜 현재 적용된 계획</h2>
-        <div id="currentPlanDisplay" style="font-size:0.95rem; line-height:1.6;">목표를 설정해주세요.</div>
+        <div id="currentPlanDisplay" style="font-size:0.95rem; line-height:1.6;">저장된 목표가 없습니다. 위에서 작성 후 저장해 주세요.</div>
       </div>
 
       <div class="card">
@@ -169,6 +174,7 @@
 
     <!-- 2. 할 일 (Do) -->
     <div id="todoTab" class="tab-content">
+      <!-- 복구된 할 일 입력 Form -->
       <div class="card">
         <h2>➕ 할 일 추가</h2>
         <form id="addTodoForm">
@@ -183,7 +189,11 @@
             </div>
             <div>
               <label>우선순위</label>
-              <select id="todoPriority"><option value="P1">P1</option><option value="P2" selected>P2</option><option value="P3">P3</option></select>
+              <select id="todoPriority">
+                <option value="P1">P1 (높음)</option>
+                <option value="P2" selected>P2 (보통)</option>
+                <option value="P3">P3 (낮음)</option>
+              </select>
             </div>
           </div>
           <div class="grid">
@@ -192,7 +202,7 @@
               <input type="text" id="todoTag" placeholder="운영, 피드백, 덱분석">
             </div>
             <div style="grid-column: span 2;">
-              <label>예상 시간(시간)</label>
+              <label>예상 시간 (시간)</label>
               <input type="number" id="todoEstHours" value="1" min="0.5" step="0.5" required>
             </div>
           </div>
@@ -209,22 +219,36 @@
           </div>
           <div>
             <label>상태 필터</label>
-            <select id="todoFilterStatus"><option value="ALL">전체 보기</option><option value="DOING">진행 중</option><option value="DONE">완료</option></select>
+            <select id="todoFilterStatus">
+              <option value="ALL">전체 보기</option>
+              <option value="DOING">진행 중</option>
+              <option value="DONE">완료</option>
+            </select>
           </div>
           <div>
             <label>정렬 기준</label>
-            <select id="todoSort"><option value="DATE_ASC">마감일 오름차순 (빠른순)</option><option value="DATE_DESC">마감일 내림차순</option></select>
+            <select id="todoSort">
+              <option value="DATE_ASC">마감일 오름차순 (빠른순)</option>
+              <option value="DATE_DESC">마감일 내림차순</option>
+            </select>
           </div>
         </div>
 
         <table>
           <thead>
             <tr>
-              <th>상태</th><th>할 일</th><th>마감일</th><th>우선순위</th><th>태그</th><th>예상</th><th>실행/막힘</th><th>작업</th>
+              <th>상태</th>
+              <th>할 일</th>
+              <th>마감일</th>
+              <th>우선순위</th>
+              <th>태그</th>
+              <th>예상시간</th>
+              <th>실제시간</th>
+              <th>관리</th>
             </tr>
           </thead>
           <tbody id="todoTableBody">
-            <tr><td colspan="8" style="color:var(--sub);">할 일이 없습니다.</td></tr>
+            <tr><td colspan="8" style="color:var(--sub);">등록된 할 일이 없습니다.</td></tr>
           </tbody>
         </table>
       </div>
@@ -232,6 +256,7 @@
 
     <!-- 3. 티어 그래프 (Tier) -->
     <div id="tierTab" class="tab-content">
+      <!-- 복구된 티어 입력 Form -->
       <div class="card">
         <h2>📈 티어 LP 기록 입력</h2>
         <form id="tierRecordForm">
@@ -250,6 +275,7 @@
                 <option value="플래티넘">플래티넘</option>
                 <option value="에메랄드">에메랄드</option>
                 <option value="다이아">다이아</option>
+                <option value="마스터">마스터</option>
               </select>
             </div>
             <div>
@@ -263,7 +289,7 @@
             </div>
             <div>
               <label>LP (0~99)</label>
-              <input type="number" id="tierLp" min="0" max="99" value="45" required>
+              <input type="number" id="tierLp" min="0" max="99" value="0" required>
             </div>
           </div>
           <button type="submit" class="btn-main">티어 기록 저장</button>
@@ -281,10 +307,10 @@
     <!-- 4. 돌아보기 (See) -->
     <div id="seeTab" class="tab-content">
       <div class="card">
-        <h2>📊 돌아보기 집계 (클릭 시 해당 기록으로 이동)</h2>
+        <h2>📊 돌아보기 집계</h2>
         <div class="stat-grid">
           <div class="stat-card">
-            <div class="stat-title">전체 계획 할 일</div>
+            <div class="stat-title">전체 할 일</div>
             <div class="stat-num" id="statTotal">0</div>
           </div>
           <div class="stat-card">
@@ -296,24 +322,25 @@
             <div class="stat-num" id="statDelay" style="color:#f59e0b;">0</div>
           </div>
           <div class="stat-card">
-            <div class="stat-title">막힘 수</div>
-            <div class="stat-num" id="statBlock" style="color:var(--danger);">0</div>
+            <div class="stat-title">진행 중</div>
+            <div class="stat-num" id="statDoing" style="color:var(--accent);">0</div>
           </div>
         </div>
         <div class="stat-card" style="margin-top:12px;">
-          <div class="stat-title">총 예상 시간 / 실제 시간 / 차이</div>
-          <div class="stat-num" id="statTimeSummary" style="font-size:1.4rem;">0h / 0h (차이: 0.0h)</div>
+          <div class="stat-title">총 예상 시간 / 실제 시간 합계</div>
+          <div class="stat-num" id="statTimeSummary" style="font-size:1.3rem;">0h / 0h</div>
         </div>
       </div>
 
       <div class="card">
-        <h2>💡 돌아보기에서 다음 계획으로 넘길 한 줄</h2>
+        <h2>💡 다음 계획으로 넘길 피드백 한 줄</h2>
         <form id="nextActionForm">
           <div style="margin-bottom:12px;">
             <input type="text" id="nextActionInput" placeholder="예: 8레벨 리롤 타이밍에 돈 30원 미만으로 떨어뜨리지 않기" required>
           </div>
-          <button type="submit" class="btn-main">다음 계획으로 전송하기</button>
+          <button type="submit" class="btn-main">피드백 저장하기</button>
         </form>
+        <div id="savedFeedbackDisplay" style="margin-top: 12px; font-size: 0.9rem; color: var(--sub);"></div>
       </div>
 
       <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
@@ -329,7 +356,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBigcKnHH1iioUAXJiXtCpdLzryxsTmHWw",
@@ -345,18 +372,16 @@
   const db = getFirestore(app);
 
   let currentUser = null;
-  let currentNickname = "잡레이너";
+  let currentNickname = "";
   let todos = [];
   let tierRecords = [];
   let chartInstance = null;
 
-  // DB 참조 경로 구하기 (회원 고유 ID로 데이터 분리)
   function getUserRef(subCol, docId = null) {
     if(docId) return doc(db, "users", currentUser.uid, subCol, docId);
     return collection(db, "users", currentUser.uid, subCol);
   }
 
-  // Auth 탭 전환
   function switchAuthTab(type) {
     if(type === 'login') {
       document.getElementById('loginForm').classList.remove('hidden');
@@ -375,7 +400,6 @@
     }
   }
 
-  // 앱 메인 탭 전환
   function switchTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -387,10 +411,10 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    // 오늘 날짜 세팅
     const today = new Date().toISOString().split('T')[0];
     if(document.getElementById('todoDueDate')) document.getElementById('todoDueDate').value = today;
     if(document.getElementById('tierDate')) document.getElementById('tierDate').value = today;
+    if(document.getElementById('planPeriod')) document.getElementById('planPeriod').value = today;
 
     document.getElementById('authTabLogin')?.addEventListener('click', () => switchAuthTab('login'));
     document.getElementById('authTabSignup')?.addEventListener('click', () => switchAuthTab('signup'));
@@ -399,7 +423,6 @@
       btn.addEventListener('click', (e) => switchTab(e.target.getAttribute('data-tab')));
     });
 
-    // 로그인 / 회원가입
     document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
@@ -416,11 +439,22 @@
       try {
         const cred = await createUserWithEmailAndPassword(auth, document.getElementById('signupEmail').value, pass);
         await updateProfile(cred.user, { displayName: nick });
-        alert('회원가입이 완료되었습니다!');
+        alert('회원가입 완료!');
       } catch(err) { alert('가입 실패: ' + err.message); }
     });
 
     document.getElementById('logoutBtn')?.addEventListener('click', () => signOut(auth).then(() => location.reload()));
+
+    // 닉네임 변경
+    document.getElementById('changeNickBtn')?.addEventListener('click', async () => {
+      const newNick = prompt("새로운 소환사 닉네임을 입력하세요:", currentNickname);
+      if(newNick && newNick.trim() !== "") {
+        await updateProfile(auth.currentUser, { displayName: newNick.trim() });
+        currentNickname = newNick.trim();
+        updateUserUI();
+        alert("닉네임이 변경되었습니다.");
+      }
+    });
 
     // 계획 저장
     document.getElementById('planForm')?.addEventListener('submit', async (e) => {
@@ -435,14 +469,13 @@
 
       try {
         await setDoc(getUserRef("pds_plans", "main_plan"), planData);
-        // 이력 추가
         await addDoc(getUserRef("pds_plan_history"), { ...planData, savedAt: new Date().toLocaleString() });
         alert("계획이 성공적으로 저장되었습니다!");
         loadPlanData();
       } catch(err) { alert("저장 실패: " + err.message); }
     });
 
-    // 할 일 등록
+    // 할 일 추가
     document.getElementById('addTodoForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const newTodo = {
@@ -459,13 +492,13 @@
         await addDoc(getUserRef("pds_todos"), newTodo);
         document.getElementById('todoTitle').value = "";
         loadTodoData();
-      } catch(err) { alert("할 일 등록 실패: " + err.message); }
+      } catch(err) { alert("등록 실패: " + err.message); }
     });
 
-    // 티어 기록 저장
+    // 티어 기록 추가
     document.getElementById('tierRecordForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const tierMap = { "아이언":0, "브론즈":400, "실버":800, "골드":1200, "플래티넘":1600, "에메랄드":2000, "다이아":2400 };
+      const tierMap = { "아이언":0, "브론즈":400, "실버":800, "골드":1200, "플래티넘":1600, "에메랄드":2000, "다이아":2400, "마스터":2800 };
       const name = document.getElementById('tierName').value;
       const div = Number(document.getElementById('tierDivision').value);
       const lp = Number(document.getElementById('tierLp').value);
@@ -481,9 +514,20 @@
 
       try {
         await addDoc(getUserRef("pds_tier_records"), record);
-        alert("티어 LP가 기록되었습니다.");
+        alert("티어 기록이 추가되었습니다.");
         loadTierData();
-      } catch(err) { alert("기록 실패: " + err.message); }
+      } catch(err) { alert("저장 실패: " + err.message); }
+    });
+
+    // 피드백 전송
+    document.getElementById('nextActionForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = document.getElementById('nextActionInput').value;
+      try {
+        await setDoc(getUserRef("pds_plans", "feedback"), { feedback: text, updatedAt: new Date().toLocaleString() });
+        alert("피드백이 저장되었습니다.");
+        document.getElementById('savedFeedbackDisplay').textContent = `최근 피드백: ${text}`;
+      } catch(err) { alert("저장 실패: " + err.message); }
     });
 
     // 계정 삭제
@@ -496,18 +540,15 @@
     });
   });
 
-  // 상태 감지
   onAuthStateChanged(auth, async (user) => {
     if(user) {
       currentUser = user;
-      currentNickname = user.displayName || "잡레이너";
+      currentNickname = user.displayName || user.email.split('@')[0];
       
       document.getElementById('authContainer').classList.add('hidden');
       document.getElementById('appContainer').classList.remove('hidden');
       
-      document.getElementById('mainHeaderTitle').textContent = `🎮 TFT 다이어리 (${currentNickname})`;
-      document.getElementById('userEmailSpan').textContent = user.email;
-      document.getElementById('planTitleLabel').textContent = `계획명 (소환사: ${currentNickname})`;
+      updateUserUI();
 
       await loadPlanData();
       await loadTodoData();
@@ -519,11 +560,22 @@
     }
   });
 
-  // 데이터 로드 함수들
+  function updateUserUI() {
+    document.getElementById('mainHeaderTitle').textContent = `🎮 TFT 다이어리 (${currentNickname})`;
+    document.getElementById('userEmailSpan').textContent = currentUser.email;
+    document.getElementById('planTitleLabel').textContent = `계획명 (소환사: ${currentNickname})`;
+  }
+
   async function loadPlanData() {
     const snap = await getDoc(getUserRef("pds_plans", "main_plan"));
     if(snap.exists()) {
       const p = snap.data();
+      document.getElementById('planTitle').value = p.title || "";
+      document.getElementById('planPeriod').value = p.period || "";
+      document.getElementById('planPriority').value = p.priority || "P1 (높음)";
+      document.getElementById('planCriteria').value = p.criteria || "";
+      document.getElementById('planEstHours').value = p.estHours || 100;
+
       document.getElementById('currentPlanDisplay').innerHTML = `
         <b>목표:</b> ${p.title} | <b>기간:</b> ${p.period} | <b>우선순위:</b> ${p.priority}<br>
         <b>성공기준:</b> ${p.criteria} | <b>예상시간:</b> ${p.estHours}시간
@@ -534,7 +586,7 @@
     let html = "";
     histSnap.forEach(d => {
       const h = d.data();
-      html += `<div class="history-item"><span>[저장시각: ${h.savedAt}] - ${h.title}</span><button class="btn-danger" onclick="deleteHistory('${d.id}')">삭제</button></div>`;
+      html += `<div class="history-item"><span>[저장시각: ${h.savedAt}] ${h.title}</span> <button class="btn-danger" onclick="window.deletePlanHistory('${d.id}')">삭제</button></div>`;
     });
     document.getElementById('planHistoryList').innerHTML = html || "이력이 없습니다.";
   }
@@ -543,12 +595,19 @@
     const snap = await getDocs(getUserRef("pds_todos"));
     todos = [];
     let html = "";
+    let doneCount = 0;
     let totalEst = 0;
+    let totalAct = 0;
 
     snap.forEach(d => {
+      const id = d.id;
       const t = d.data();
-      todos.push(t);
-      totalEst += t.estHours;
+      todos.push({ id, ...t });
+      
+      if(t.status === 'DONE') doneCount++;
+      totalEst += Number(t.estHours || 0);
+      totalAct += Number(t.actualHours || 0);
+
       html += `
         <tr>
           <td>${t.status === 'DONE' ? '✅ 완료' : '⏳ 진행중'}</td>
@@ -558,14 +617,19 @@
           <td>${t.tag}</td>
           <td>${t.estHours}h</td>
           <td>${t.actualHours}h</td>
-          <td><button class="btn-sub" onclick="toggleTodo('${d.id}', '${t.status}')">상태 변경</button></td>
+          <td>
+            <button class="btn-sub" onclick="window.toggleTodoStatus('${id}', '${t.status}')">상태변경</button>
+            <button class="btn-danger" onclick="window.deleteTodo('${id}')">삭제</button>
+          </td>
         </tr>
       `;
     });
 
-    document.getElementById('todoTableBody').innerHTML = html || '<tr><td colspan="8" style="color:var(--sub);">할 일이 없습니다.</td></tr>';
+    document.getElementById('todoTableBody').innerHTML = html || '<tr><td colspan="8" style="color:var(--sub);">등록된 할 일이 없습니다.</td></tr>';
     document.getElementById('statTotal').textContent = todos.length;
-    document.getElementById('statTimeSummary').textContent = `${totalEst}h / 0h (차이: ${totalEst}h)`;
+    document.getElementById('statDone').textContent = doneCount;
+    document.getElementById('statDoing').textContent = todos.length - doneCount;
+    document.getElementById('statTimeSummary').textContent = `${totalEst}h / ${totalAct}h`;
   }
 
   async function loadTierData() {
@@ -585,7 +649,7 @@
       data: {
         labels: tierRecords.map(r => r.date),
         datasets: [{
-          label: '티어 LP 변동 추이',
+          label: `${currentNickname}님 티어 LP 변동 추이`,
           data: tierRecords.map(r => r.score),
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.15)',
@@ -596,6 +660,25 @@
       options: { responsive: true }
     });
   }
+
+  // 전역 등록 (HTML 버튼에서 호출용)
+  window.toggleTodoStatus = async (id, currentStatus) => {
+    const nextStatus = currentStatus === 'DONE' ? 'DOING' : 'DONE';
+    await updateDoc(getUserRef("pds_todos", id), { status: nextStatus });
+    loadTodoData();
+  };
+
+  window.deleteTodo = async (id) => {
+    if(!confirm("이 할 일을 삭제하시겠습니까?")) return;
+    await deleteDoc(getUserRef("pds_todos", id));
+    loadTodoData();
+  };
+
+  window.deletePlanHistory = async (id) => {
+    if(!confirm("이 이력을 삭제하시겠습니까?")) return;
+    await deleteDoc(getUserRef("pds_plan_history", id));
+    loadPlanData();
+  };
 </script>
 </body>
 </html>

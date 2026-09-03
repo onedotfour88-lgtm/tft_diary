@@ -3,53 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDS 다이어리 - TFT 시즌 목표</title>
+  <title>TFT 다이어리</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg: #090d16; 
-      --card: #131b2e; 
-      --border: #1e293b; 
-      --text: #f8fafc; 
-      --sub: #94a3b8; 
-      --accent: #38bdf8; 
-      --danger: #ef4444; 
+      --bg: #0b0f19;
+      --card: #151c2c;
+      --input-bg: #0f1523;
+      --border: #222f47;
+      --text: #f8fafc;
+      --sub: #94a3b8;
+      --accent: #38bdf8;
+      --danger: #ef4444;
       --success: #10b981;
     }
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 24px 20px; line-height: 1.5; }
     .container { max-width: 960px; margin: 0 auto; }
     
-    .nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; flex-wrap: wrap; }
-    .nav button { background: none; border: none; color: var(--sub); font-size: 0.95rem; font-weight: 700; padding: 10px 18px; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .header-title { font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 10px; margin: 0; }
+    .header-user { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; color: var(--sub); }
+    
+    .nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    .nav button { background: none; border: none; color: var(--sub); font-size: 1rem; font-weight: 700; padding: 10px 20px; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
     .nav button:hover { color: #fff; background: rgba(255,255,255,0.05); }
     .nav button.active { background: var(--accent); color: #000; }
     
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-    h2 { margin-top: 0; color: var(--accent); font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    h2 { margin-top: 0; color: var(--accent); font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
     
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
     label { font-size: 0.85rem; color: var(--sub); font-weight: 600; margin-bottom: 6px; display: block; }
-    input, select { width: 100%; padding: 10px 12px; background: #0b111e; border: 1px solid var(--border); border-radius: 6px; color: #fff; box-sizing: border-box; font-size: 0.9rem; outline: none; }
-    input:focus, select:focus { border-color: var(--accent); }
+    input, select, textarea { width: 100%; padding: 10px 12px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: #fff; box-sizing: border-box; font-size: 0.9rem; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
     
-    button.btn-main { background: var(--accent); color: #000; font-weight: 700; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 0.95rem; transition: background 0.2s; }
-    button.btn-main:hover { background: #7dd3fc; }
+    button.btn-main { background: var(--accent); color: #000; font-weight: 700; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 0.95rem; }
+    button.btn-main:hover { opacity: 0.9; }
     button.btn-sub { background: #1e293b; color: #fff; font-weight: 600; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
-    button.btn-danger { background: var(--danger); color: #fff; font-weight: 600; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; }
+    button.btn-danger { background: var(--danger); color: #fff; font-weight: 600; padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; }
     
     table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    th, td { border: 1px solid var(--border); padding: 12px; text-align: left; font-size: 0.85rem; }
-    th { background: #0b111e; color: var(--accent); font-weight: 700; }
+    th, td { border: 1px solid var(--border); padding: 12px; text-align: center; font-size: 0.85rem; }
+    th { background: var(--input-bg); color: var(--accent); font-weight: 700; }
     
-    .stat-card { background: #0b111e; border: 1px solid var(--border); border-radius: 8px; padding: 18px; text-align: center; }
-    .stat-num { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin-top: 6px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .stat-card { background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+    .stat-title { color: var(--sub); font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
+    .stat-num { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
     
-    .history-item { background: #0b111e; padding: 14px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
+    .history-item { background: var(--input-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     .hidden { display: none !important; }
-    
-    .rule-change-badge { background: #eab308; color: #000; font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -64,36 +69,34 @@
       <button id="authTabSignup" style="flex:1; padding:10px; background:none; border:none; color:var(--sub); font-weight:700; cursor:pointer;">회원가입</button>
     </div>
 
-    <!-- 로그인 폼 -->
     <form id="loginForm">
       <div style="margin-bottom: 12px;">
         <label>이메일 계정</label>
-        <input type="email" id="loginEmail" autocomplete="username" placeholder="user@example.com" required>
+        <input type="email" id="loginEmail" placeholder="user@example.com" required>
       </div>
       <div style="margin-bottom: 20px;">
         <label>비밀번호</label>
-        <input type="password" id="loginPassword" autocomplete="current-password" placeholder="비밀번호" required>
+        <input type="password" id="loginPassword" placeholder="비밀번호" required>
       </div>
       <button type="submit" class="btn-main">로그인</button>
     </form>
 
-    <!-- 회원가입 폼 -->
     <form id="signupForm" class="hidden">
       <div style="margin-bottom: 12px;">
         <label>소환사 닉네임</label>
-        <input type="text" id="signupNickname" placeholder="예: 챌린저가자" required>
+        <input type="text" id="signupNickname" placeholder="예: 잡레이너" required>
       </div>
       <div style="margin-bottom: 12px;">
         <label>신규 이메일</label>
-        <input type="email" id="signupEmail" autocomplete="username" placeholder="user@example.com" required>
+        <input type="email" id="signupEmail" placeholder="user@example.com" required>
       </div>
       <div style="margin-bottom: 12px;">
         <label>비밀번호 (6자리 이상)</label>
-        <input type="password" id="signupPassword" autocomplete="new-password" placeholder="비밀번호" required>
+        <input type="password" id="signupPassword" placeholder="비밀번호" required>
       </div>
       <div style="margin-bottom: 20px;">
         <label>비밀번호 확인</label>
-        <input type="password" id="signupPasswordConfirm" autocomplete="new-password" placeholder="비밀번호 확인" required>
+        <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
       </div>
       <button type="submit" class="btn-main" style="background:var(--success); color:#fff;">회원가입 완료</button>
     </form>
@@ -101,16 +104,18 @@
 
   <!-- 메인 앱 화면 -->
   <div id="appContainer" class="hidden">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; flex-wrap: wrap; gap:12px;">
-      <h1 style="margin:0; font-size: 1.5rem;" id="mainHeaderTitle">🎮 TFT 다이어리</h1>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <span id="userNicknameBadge" style="font-size: 0.9rem; font-weight:bold; color: var(--accent);"></span>
-        <button id="changeNickBtn" class="btn-sub">닉네임 변경</button>
-        <button id="exportBtn" class="btn-sub">📥 데이터 내보내기</button>
+    
+    <!-- 상단 헤더 -->
+    <div class="header">
+      <h1 class="header-title" id="mainHeaderTitle">🎮 TFT 다이어리 (잡레이너)</h1>
+      <div class="header-user">
+        <span id="userEmailSpan">onedotfour88@gmail.com</span>
+        <button id="exportBtn" class="btn-sub">💾 데이터 내보내기</button>
         <button id="logoutBtn" class="btn-danger">로그아웃</button>
       </div>
     </div>
 
+    <!-- 네비게이션 탭 -->
     <div class="nav">
       <button class="nav-btn active" data-tab="planTab">1. 계획 (Plan)</button>
       <button class="nav-btn" data-tab="todoTab">2. 할 일 (Do)</button>
@@ -122,24 +127,38 @@
     <div id="planTab" class="tab-content active">
       <div class="card">
         <h2>📌 시즌 계획 세우기</h2>
-        <div class="grid">
-          <div>
-            <label id="planTitleLabel">계획명</label>
-            <input type="text" id="planTitle" value="TFT 시즌 골드 달성 및 승률 12.5% 유지">
+        <form id="planForm">
+          <div class="grid">
+            <div style="grid-column: span 2;">
+              <label id="planTitleLabel">계획명 (소환사: 잡레이너)</label>
+              <input type="text" id="planTitle" value="TFT 시즌 다이아 달성 및 승률 12.5% 유지" required>
+            </div>
+            <div>
+              <label>기간 (마감일)</label>
+              <input type="date" id="planPeriod" value="2026-10-31" required>
+            </div>
+            <div>
+              <label>우선순위</label>
+              <select id="planPriority"><option value="P1 (높음)">P1 (높음)</option><option value="P2 (보통)">P2 (보통)</option></select>
+            </div>
           </div>
-          <div><label>마감일</label><input type="date" id="planPeriod" value="2026-09-14"></div>
-          <div><label>우선순위</label><select id="planPriority"><option value="P1">P1 (높음)</option><option value="P2">P2 (보통)</option></select></div>
-        </div>
-        <div class="grid">
-          <div><label>성공 기준</label><input type="text" id="planCriteria" value="시즌 골드 4 달성"></div>
-          <div><label>예상 시간 (시간)</label><input type="number" id="planEstHours" value="4"></div>
-        </div>
-        <button class="btn-main" id="savePlanBtn">계획 저장 / 수정하기</button>
+          <div class="grid">
+            <div style="grid-column: span 2;">
+              <label>성공 기준</label>
+              <input type="text" id="planCriteria" value="티어 다이아4 이상 / TOP4 비율 55% 이상" required>
+            </div>
+            <div style="grid-column: span 2;">
+              <label>예상 시간 (시간 단위)</label>
+              <input type="number" id="planEstHours" value="150" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-main">계획 저장 / 수정하기</button>
+        </form>
       </div>
 
       <div class="card">
         <h2>📜 현재 적용된 계획</h2>
-        <div id="currentPlanDisplay">불러오는 중...</div>
+        <div id="currentPlanDisplay" style="font-size:0.95rem; line-height:1.6;">목표를 설정해주세요.</div>
       </div>
 
       <div class="card">
@@ -151,12 +170,62 @@
     <!-- 2. 할 일 (Do) -->
     <div id="todoTab" class="tab-content">
       <div class="card">
-        <h2>➕ 5일간 기록 관찰 할 일 목록</h2>
+        <h2>➕ 할 일 추가</h2>
+        <form id="addTodoForm">
+          <div class="grid">
+            <div style="grid-column: span 2;">
+              <label>할 일 내용</label>
+              <input type="text" id="todoTitle" placeholder="예: 메타 덱 3개 증강체 타이밍 복기" required>
+            </div>
+            <div>
+              <label>마감일</label>
+              <input type="date" id="todoDueDate" required>
+            </div>
+            <div>
+              <label>우선순위</label>
+              <select id="todoPriority"><option value="P1">P1</option><option value="P2" selected>P2</option><option value="P3">P3</option></select>
+            </div>
+          </div>
+          <div class="grid">
+            <div style="grid-column: span 2;">
+              <label>태그</label>
+              <input type="text" id="todoTag" placeholder="운영, 피드백, 덱분석">
+            </div>
+            <div style="grid-column: span 2;">
+              <label>예상 시간(시간)</label>
+              <input type="number" id="todoEstHours" value="1" min="0.5" step="0.5" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-main">할 일 등록</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>🔍 검색 / 거르기 / 정렬</h2>
+        <div class="grid">
+          <div>
+            <label>검색어</label>
+            <input type="text" id="todoSearch" placeholder="제목 또는 태그 검색">
+          </div>
+          <div>
+            <label>상태 필터</label>
+            <select id="todoFilterStatus"><option value="ALL">전체 보기</option><option value="DOING">진행 중</option><option value="DONE">완료</option></select>
+          </div>
+          <div>
+            <label>정렬 기준</label>
+            <select id="todoSort"><option value="DATE_ASC">마감일 오름차순 (빠른순)</option><option value="DATE_DESC">마감일 내림차순</option></select>
+          </div>
+        </div>
+
         <table>
           <thead>
-            <tr><th>상태</th><th>할 일</th><th>마감일</th><th>우선순위</th><th>태그</th><th>예상/실제</th></tr>
+            <tr>
+              <th>상태</th><th>할 일</th><th>마감일</th><th>우선순위</th><th>태그</th><th>예상</th><th>실행/막힘</th><th>작업</th>
+            </tr>
           </thead>
-          <tbody id="todoTableBody"></tbody>
+          <tbody id="todoTableBody">
+            <tr><td colspan="8" style="color:var(--sub);">할 일이 없습니다.</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -164,8 +233,46 @@
     <!-- 3. 티어 그래프 (Tier) -->
     <div id="tierTab" class="tab-content">
       <div class="card">
-        <h2>📊 티어 변동 추이 (5일간 기록 및 규칙 변경 지점)</h2>
-        <div style="background:#0b111e; padding:16px; border-radius:8px;">
+        <h2>📈 티어 LP 기록 입력</h2>
+        <form id="tierRecordForm">
+          <div class="grid">
+            <div>
+              <label>날짜</label>
+              <input type="date" id="tierDate" required>
+            </div>
+            <div>
+              <label>티어 선택</label>
+              <select id="tierName">
+                <option value="아이언">아이언</option>
+                <option value="브론즈">브론즈</option>
+                <option value="실버">실버</option>
+                <option value="골드" selected>골드</option>
+                <option value="플래티넘">플래티넘</option>
+                <option value="에메랄드">에메랄드</option>
+                <option value="다이아">다이아</option>
+              </select>
+            </div>
+            <div>
+              <label>세부 단계 (4~1단계)</label>
+              <select id="tierDivision">
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2" selected>2</option>
+                <option value="1">1</option>
+              </select>
+            </div>
+            <div>
+              <label>LP (0~99)</label>
+              <input type="number" id="tierLp" min="0" max="99" value="45" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-main">티어 기록 저장</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>📊 티어 변동 그래프 열람</h2>
+        <div style="background:var(--input-bg); padding:16px; border-radius:8px; border: 1px solid var(--border);">
           <canvas id="tierChart" height="200"></canvas>
         </div>
       </div>
@@ -174,25 +281,47 @@
     <!-- 4. 돌아보기 (See) -->
     <div id="seeTab" class="tab-content">
       <div class="card">
-        <h2>📊 돌아보기 집계 및 손으로 더한 값 검증</h2>
-        <div class="grid">
+        <h2>📊 돌아보기 집계 (클릭 시 해당 기록으로 이동)</h2>
+        <div class="stat-grid">
           <div class="stat-card">
-            <div style="color:var(--sub); font-size:0.85rem;">전체 5일 총 작업 수</div>
-            <div class="stat-num" id="statTotal">5</div>
+            <div class="stat-title">전체 계획 할 일</div>
+            <div class="stat-num" id="statTotal">0</div>
           </div>
           <div class="stat-card">
-            <div style="color:var(--sub); font-size:0.85rem;">총 예상 / 실제 시간 (차이)</div>
-            <div class="stat-num" id="statTimeDiff" style="font-size:1.3rem;">5h / 5h (0h)</div>
+            <div class="stat-title">완료 수</div>
+            <div class="stat-num" id="statDone" style="color:var(--success);">0</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-title">지연 수</div>
+            <div class="stat-num" id="statDelay" style="color:#f59e0b;">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">막힘 수</div>
+            <div class="stat-num" id="statBlock" style="color:var(--danger);">0</div>
+          </div>
+        </div>
+        <div class="stat-card" style="margin-top:12px;">
+          <div class="stat-title">총 예상 시간 / 실제 시간 / 차이</div>
+          <div class="stat-num" id="statTimeSummary" style="font-size:1.4rem;">0h / 0h (차이: 0.0h)</div>
         </div>
       </div>
 
+      <div class="card">
+        <h2>💡 돌아보기에서 다음 계획으로 넘길 한 줄</h2>
+        <form id="nextActionForm">
+          <div style="margin-bottom:12px;">
+            <input type="text" id="nextActionInput" placeholder="예: 8레벨 리롤 타이밍에 돈 30원 미만으로 떨어뜨리지 않기" required>
+          </div>
+          <button type="submit" class="btn-main">다음 계획으로 전송하기</button>
+        </form>
+      </div>
+
       <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
-        <h2 style="color: var(--danger);">⚠️ 계정 처리</h2>
-        <p style="font-size:0.85rem; color:var(--sub);">계정을 삭제하면 Firestore 내 등록된 모든 개인 자료가 함께 즉시 파기되어 복구할 수 없습니다.</p>
-        <button id="deleteAccBtn" class="btn-danger">계정 및 내 모든 데이터 즉시 삭제</button>
+        <h2 style="color: var(--danger);">⚠️ 계정 관리</h2>
+        <button id="deleteAccBtn" class="btn-danger">계정 및 모든 데이터 삭제</button>
       </div>
     </div>
+
   </div>
 
 </div>
@@ -200,7 +329,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBigcKnHH1iioUAXJiXtCpdLzryxsTmHWw",
@@ -216,147 +345,173 @@
   const db = getFirestore(app);
 
   let currentUser = null;
-  let currentNickname = "사용자";
-  let plansHistory = [];
-  let currentPlan = null;
+  let currentNickname = "잡레이너";
   let todos = [];
   let tierRecords = [];
   let chartInstance = null;
 
-  // 탭 전환 핸들러
-  function switchAuthTab(type) {
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    const tabLogin = document.getElementById('authTabLogin');
-    const tabSignup = document.getElementById('authTabSignup');
+  // DB 참조 경로 구하기 (회원 고유 ID로 데이터 분리)
+  function getUserRef(subCol, docId = null) {
+    if(docId) return doc(db, "users", currentUser.uid, subCol, docId);
+    return collection(db, "users", currentUser.uid, subCol);
+  }
 
+  // Auth 탭 전환
+  function switchAuthTab(type) {
     if(type === 'login') {
-      loginForm.classList.remove('hidden');
-      signupForm.classList.add('hidden');
-      tabLogin.style.color = "var(--accent)";
-      tabLogin.style.borderBottom = "3px solid var(--accent)";
-      tabSignup.style.color = "var(--sub)";
-      tabSignup.style.borderBottom = "none";
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('signupForm').classList.add('hidden');
+      document.getElementById('authTabLogin').style.color = "var(--accent)";
+      document.getElementById('authTabLogin').style.borderBottom = "3px solid var(--accent)";
+      document.getElementById('authTabSignup').style.color = "var(--sub)";
+      document.getElementById('authTabSignup').style.borderBottom = "none";
     } else {
-      loginForm.classList.add('hidden');
-      signupForm.classList.remove('hidden');
-      tabSignup.style.color = "var(--accent)";
-      tabSignup.style.borderBottom = "3px solid var(--accent)";
-      tabLogin.style.color = "var(--sub)";
-      tabLogin.style.borderBottom = "none";
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('signupForm').classList.remove('hidden');
+      document.getElementById('authTabSignup').style.color = "var(--accent)";
+      document.getElementById('authTabSignup').style.borderBottom = "3px solid var(--accent)";
+      document.getElementById('authTabLogin').style.color = "var(--sub)";
+      document.getElementById('authTabLogin').style.borderBottom = "none";
     }
   }
 
-  // 메인 앱 탭 전환
+  // 앱 메인 탭 전환
   function switchTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId)?.classList.add('active');
     
-    const activeBtn = document.querySelector(`.nav-btn[data-tab="${tabId}"]`);
-    if(activeBtn) activeBtn.classList.add('active');
+    document.getElementById(tabId)?.classList.add('active');
+    document.querySelector(`.nav-btn[data-tab="${tabId}"]`)?.classList.add('active');
 
     if (tabId === 'tierTab') renderTierChart();
   }
 
-  // DOM 이벤트 연결
   document.addEventListener("DOMContentLoaded", () => {
+    // 오늘 날짜 세팅
+    const today = new Date().toISOString().split('T')[0];
+    if(document.getElementById('todoDueDate')) document.getElementById('todoDueDate').value = today;
+    if(document.getElementById('tierDate')) document.getElementById('tierDate').value = today;
+
     document.getElementById('authTabLogin')?.addEventListener('click', () => switchAuthTab('login'));
     document.getElementById('authTabSignup')?.addEventListener('click', () => switchAuthTab('signup'));
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const tabId = e.target.getAttribute('data-tab');
-        if(tabId) switchTab(tabId);
-      });
+      btn.addEventListener('click', (e) => switchTab(e.target.getAttribute('data-tab')));
     });
 
+    // 로그인 / 회원가입
     document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const pass = document.getElementById('loginPassword').value;
       try {
-        await signInWithEmailAndPassword(auth, email, pass);
-      } catch(err) {
-        alert('로그인 오류: ' + err.message);
-      }
+        await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
+      } catch(err) { alert('로그인 실패: ' + err.message); }
     });
 
     document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const nickname = document.getElementById('signupNickname').value.trim();
-      const email = document.getElementById('signupEmail').value;
+      const nick = document.getElementById('signupNickname').value.trim();
       const pass = document.getElementById('signupPassword').value;
-      const passConfirm = document.getElementById('signupPasswordConfirm').value;
-
-      if(!nickname) return alert('닉네임을 입력해 주세요.');
-      if(pass !== passConfirm) return alert('비밀번호가 일치하지 않습니다.');
+      if(pass !== document.getElementById('signupPasswordConfirm').value) return alert('비밀번호가 일치하지 않습니다.');
 
       try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(userCred.user, { displayName: nickname });
-        alert(`${nickname}님, 회원가입이 완료되었습니다!`);
-      } catch(err) {
-        alert('가입 오류: ' + err.message);
-      }
+        const cred = await createUserWithEmailAndPassword(auth, document.getElementById('signupEmail').value, pass);
+        await updateProfile(cred.user, { displayName: nick });
+        alert('회원가입이 완료되었습니다!');
+      } catch(err) { alert('가입 실패: ' + err.message); }
     });
 
-    document.getElementById('changeNickBtn')?.addEventListener('click', async () => {
-      const newNick = prompt("새로운 소환사 닉네임을 입력하세요:", currentNickname);
-      if (!newNick || newNick.trim() === "" || newNick === currentNickname) return;
+    document.getElementById('logoutBtn')?.addEventListener('click', () => signOut(auth).then(() => location.reload()));
+
+    // 계획 저장
+    document.getElementById('planForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const planData = {
+        title: document.getElementById('planTitle').value,
+        period: document.getElementById('planPeriod').value,
+        priority: document.getElementById('planPriority').value,
+        criteria: document.getElementById('planCriteria').value,
+        estHours: Number(document.getElementById('planEstHours').value)
+      };
+
       try {
-        await updateProfile(auth.currentUser, { displayName: newNick.trim() });
-        currentNickname = newNick.trim();
-        updateHeaderAndUI();
-        alert("닉네임이 성공적으로 변경되었습니다!");
-      } catch (err) {
-        alert("닉네임 변경 실패: " + err.message);
-      }
+        await setDoc(getUserRef("pds_plans", "main_plan"), planData);
+        // 이력 추가
+        await addDoc(getUserRef("pds_plan_history"), { ...planData, savedAt: new Date().toLocaleString() });
+        alert("계획이 성공적으로 저장되었습니다!");
+        loadPlanData();
+      } catch(err) { alert("저장 실패: " + err.message); }
     });
 
-    document.getElementById('logoutBtn')?.addEventListener('click', () => {
-      signOut(auth).then(() => location.reload());
+    // 할 일 등록
+    document.getElementById('addTodoForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newTodo = {
+        title: document.getElementById('todoTitle').value,
+        dueDate: document.getElementById('todoDueDate').value,
+        priority: document.getElementById('todoPriority').value,
+        tag: document.getElementById('todoTag').value || "일반",
+        estHours: Number(document.getElementById('todoEstHours').value),
+        actualHours: 0,
+        status: "DOING"
+      };
+
+      try {
+        await addDoc(getUserRef("pds_todos"), newTodo);
+        document.getElementById('todoTitle').value = "";
+        loadTodoData();
+      } catch(err) { alert("할 일 등록 실패: " + err.message); }
     });
 
-    document.getElementById('savePlanBtn')?.addEventListener('click', () => alert("계획이 저장되었습니다."));
+    // 티어 기록 저장
+    document.getElementById('tierRecordForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const tierMap = { "아이언":0, "브론즈":400, "실버":800, "골드":1200, "플래티넘":1600, "에메랄드":2000, "다이아":2400 };
+      const name = document.getElementById('tierName').value;
+      const div = Number(document.getElementById('tierDivision').value);
+      const lp = Number(document.getElementById('tierLp').value);
+      const score = tierMap[name] + ((4 - div) * 100) + lp;
 
+      const record = {
+        date: document.getElementById('tierDate').value,
+        tierName: name,
+        division: div,
+        lp: lp,
+        score: score
+      };
+
+      try {
+        await addDoc(getUserRef("pds_tier_records"), record);
+        alert("티어 LP가 기록되었습니다.");
+        loadTierData();
+      } catch(err) { alert("기록 실패: " + err.message); }
+    });
+
+    // 계정 삭제
     document.getElementById('deleteAccBtn')?.addEventListener('click', async () => {
-      if(!confirm('내 데이터가 모두 삭제되며 복구할 수 없습니다. 삭제하시겠습니까?')) return;
+      if(!confirm('모든 데이터가 삭제되며 복구 불가능합니다. 정말 삭제하시겠습니까?')) return;
       try {
-        const uid = auth.currentUser.uid;
-        await deleteDoc(doc(db, "users", uid, "pds_plans", "main_plan"));
         await deleteUser(auth.currentUser);
-        alert('계정과 개인 데이터가 전량 삭제되었습니다.');
-      } catch(err) { alert('계정 삭제 실패: ' + err.message); }
-    });
-
-    document.getElementById('exportBtn')?.addEventListener('click', () => {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ nickname: currentNickname, plan: currentPlan, history: plansHistory, todos, tierRecords }));
-      const a = document.createElement('a');
-      a.setAttribute("href", dataStr);
-      a.setAttribute("download", `pds_export_${currentNickname}.json`);
-      a.click();
+        alert('계정이 삭제되었습니다.');
+      } catch(err) { alert('삭제 실패: ' + err.message); }
     });
   });
 
-  function updateHeaderAndUI() {
-    document.getElementById('mainHeaderTitle').textContent = `🎮 TFT 다이어리 (${currentNickname})`;
-    document.getElementById('userNicknameBadge').textContent = `👤 ${currentNickname}`;
-    const labelEl = document.getElementById('planTitleLabel');
-    if(labelEl) labelEl.textContent = `계획명 (소환사: ${currentNickname})`;
-  }
-
+  // 상태 감지
   onAuthStateChanged(auth, async (user) => {
     if(user) {
       currentUser = user;
-      currentNickname = user.displayName || user.email.split('@')[0] || "사용자";
+      currentNickname = user.displayName || "잡레이너";
       
       document.getElementById('authContainer').classList.add('hidden');
       document.getElementById('appContainer').classList.remove('hidden');
       
-      updateHeaderAndUI();
-      await initData();
-      await loadAllData();
+      document.getElementById('mainHeaderTitle').textContent = `🎮 TFT 다이어리 (${currentNickname})`;
+      document.getElementById('userEmailSpan').textContent = user.email;
+      document.getElementById('planTitleLabel').textContent = `계획명 (소환사: ${currentNickname})`;
+
+      await loadPlanData();
+      await loadTodoData();
+      await loadTierData();
     } else {
       currentUser = null;
       document.getElementById('authContainer').classList.remove('hidden');
@@ -364,90 +519,61 @@
     }
   });
 
-  function getUserRef(subCol, docId = null) {
-    if(docId) return doc(db, "users", currentUser.uid, subCol, docId);
-    return collection(db, "users", currentUser.uid, subCol);
-  }
-
-  async function initData() {
-    try {
-      const planRef = getUserRef("pds_plans", "main_plan");
-      const planSnap = await getDoc(planRef);
-      if (!planSnap.exists()) {
-        await setDoc(planRef, {
-          id: "main_plan", title: "TFT 시즌 골드 달성 및 승률 12.5% 유지", period: "2026-09-14",
-          priority: "P1", criteria: "시즌 골드 4 달성", estHours: 4, nextAction: "초반부터 빠르게 50원 이자를 받기"
-        });
-
-        await setDoc(getUserRef("pds_plan_history", "hist_1"), {
-          historyId: "hist_1", title: "TFT 시즌 다이아 달성 및 승률 12.5% 유지", savedAt: "2026-08-24T15:30:00Z", reason: "초반 승률 부진으로 목표 티어를 다이아에서 골드로 하향 변경"
-        });
-
-        const todosData = [
-          { id: "t1", title: "1일차: 리롤덱 익히기", dueDate: "2026-08-20", estHours: 1, actualHours: 1, isCompleted: true },
-          { id: "t2", title: "2일차: 주술 익히기", dueDate: "2026-08-22", estHours: 1, actualHours: 1, isCompleted: true },
-          { id: "t3", title: "3일차: 증강체 복기", dueDate: "2026-08-25", estHours: 1, actualHours: 1, isCompleted: true },
-          { id: "t4", title: "4일차: 8렙 리롤 타이밍 연습", dueDate: "2026-08-27", estHours: 1, actualHours: 1, isCompleted: true },
-          { id: "t5", title: "5일차: 피드백 반영 배치 작성", dueDate: "2026-08-30", estHours: 1, actualHours: 1, isCompleted: true }
-        ];
-        for(let t of todosData) await setDoc(getUserRef("pds_todos", t.id), t);
-
-        const tiersData = [
-          { id: "tr1", date: "2026-08-20", tierName: "골드", division: 4, lp: 20, score: 1220 },
-          { id: "tr2", date: "2026-08-22", tierName: "골드", division: 3, lp: 50, score: 1250 },
-          { id: "tr_rule", date: "2026-08-24 (규칙 변경)", tierName: "골드", division: 3, lp: 50, score: 1250, isRuleChange: true },
-          { id: "tr3", date: "2026-08-25", tierName: "골드", division: 2, lp: 10, score: 1310 },
-          { id: "tr4", date: "2026-08-27", tierName: "골드", division: 2, lp: 45, score: 1345 },
-          { id: "tr5", date: "2026-08-30", tierName: "골드", division: 1, lp: 0, score: 1400 }
-        ];
-        for(let tr of tiersData) await setDoc(getUserRef("pds_tier_records", tr.id), tr);
-      }
-    } catch(e) {
-      console.error("Init Error:", e);
+  // 데이터 로드 함수들
+  async function loadPlanData() {
+    const snap = await getDoc(getUserRef("pds_plans", "main_plan"));
+    if(snap.exists()) {
+      const p = snap.data();
+      document.getElementById('currentPlanDisplay').innerHTML = `
+        <b>목표:</b> ${p.title} | <b>기간:</b> ${p.period} | <b>우선순위:</b> ${p.priority}<br>
+        <b>성공기준:</b> ${p.criteria} | <b>예상시간:</b> ${p.estHours}시간
+      `;
     }
+
+    const histSnap = await getDocs(getUserRef("pds_plan_history"));
+    let html = "";
+    histSnap.forEach(d => {
+      const h = d.data();
+      html += `<div class="history-item"><span>[저장시각: ${h.savedAt}] - ${h.title}</span><button class="btn-danger" onclick="deleteHistory('${d.id}')">삭제</button></div>`;
+    });
+    document.getElementById('planHistoryList').innerHTML = html || "이력이 없습니다.";
   }
 
-  async function loadAllData() {
-    try {
-      const planSnap = await getDoc(getUserRef("pds_plans", "main_plan"));
-      if(planSnap.exists()) {
-        currentPlan = planSnap.data();
-        document.getElementById('currentPlanDisplay').innerHTML = `
-          <b>목표:</b> ${currentPlan.title} (소환사: ${currentNickname}) | <b>기간:</b> ${currentPlan.period} | <b>우선순위:</b> ${currentPlan.priority}<br>
-          💡 <b>피드백/전송된 한 줄:</b> ${currentPlan.nextAction}
-        `;
-      }
+  async function loadTodoData() {
+    const snap = await getDocs(getUserRef("pds_todos"));
+    todos = [];
+    let html = "";
+    let totalEst = 0;
 
-      const histSnap = await getDocs(getUserRef("pds_plan_history"));
-      plansHistory = [];
-      histSnap.forEach(d => plansHistory.push(d.data()));
-      document.getElementById('planHistoryList').innerHTML = plansHistory.map(h => `
-        <div class="history-item">
-          <div><b>[규칙변경 변경시각: ${h.savedAt}]</b> ${h.title} <span class="rule-change-badge">사유: ${h.reason}</span></div>
-        </div>
-      `).join('');
-
-      const todoSnap = await getDocs(getUserRef("pds_todos"));
-      todos = [];
-      todoSnap.forEach(d => todos.push(d.data()));
-      document.getElementById('todoTableBody').innerHTML = todos.map(t => `
+    snap.forEach(d => {
+      const t = d.data();
+      todos.push(t);
+      totalEst += t.estHours;
+      html += `
         <tr>
-          <td>✅ 완료</td>
+          <td>${t.status === 'DONE' ? '✅ 완료' : '⏳ 진행중'}</td>
           <td><b>${t.title}</b></td>
           <td>${t.dueDate}</td>
-          <td>P1</td>
-          <td>운영</td>
-          <td>예상 ${t.estHours}h / 실제 ${t.actualHours}h</td>
+          <td>${t.priority}</td>
+          <td>${t.tag}</td>
+          <td>${t.estHours}h</td>
+          <td>${t.actualHours}h</td>
+          <td><button class="btn-sub" onclick="toggleTodo('${d.id}', '${t.status}')">상태 변경</button></td>
         </tr>
-      `).join('');
+      `;
+    });
 
-      const tierSnap = await getDocs(getUserRef("pds_tier_records"));
-      tierRecords = [];
-      tierSnap.forEach(d => tierRecords.push(d.data()));
-      tierRecords.sort((a,b) => a.date.localeCompare(b.date));
-    } catch(e) {
-      console.error("Load Error:", e);
-    }
+    document.getElementById('todoTableBody').innerHTML = html || '<tr><td colspan="8" style="color:var(--sub);">할 일이 없습니다.</td></tr>';
+    document.getElementById('statTotal').textContent = todos.length;
+    document.getElementById('statTimeSummary').textContent = `${totalEst}h / 0h (차이: ${totalEst}h)`;
+  }
+
+  async function loadTierData() {
+    const snap = await getDocs(getUserRef("pds_tier_records"));
+    tierRecords = [];
+    snap.forEach(d => tierRecords.push(d.data()));
+    tierRecords.sort((a,b) => a.date.localeCompare(b.date));
+    renderTierChart();
   }
 
   function renderTierChart() {
@@ -459,11 +585,12 @@
       data: {
         labels: tierRecords.map(r => r.date),
         datasets: [{
-          label: `${currentNickname}님 5일간 티어 변동 점수 (LP)`,
+          label: '티어 LP 변동 추이',
           data: tierRecords.map(r => r.score),
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.15)',
-          fill: true
+          fill: true,
+          tension: 0.3
         }]
       },
       options: { responsive: true }
